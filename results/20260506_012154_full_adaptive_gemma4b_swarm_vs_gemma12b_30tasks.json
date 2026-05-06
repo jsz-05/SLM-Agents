@@ -1,0 +1,3846 @@
+{
+  "config": {
+    "data": "data/synthetic_streams.jsonl",
+    "limit": null,
+    "mode": "both",
+    "large_model": "ollama/gemma3:12b",
+    "small_model": "ollama/gemma3:4b",
+    "temperature": 0.0,
+    "run_name": "full_adaptive_gemma4b_swarm_vs_gemma12b_30tasks",
+    "execution_order": "method",
+    "stop_ollama_between_methods": true,
+    "swarm_agents": 5,
+    "swarm_architecture": "adaptive"
+  },
+  "summary": {
+    "n": 30,
+    "baseline_avg_score": 0.8083333333333333,
+    "swarm_avg_score": 0.825,
+    "baseline_exact_count": 19,
+    "swarm_exact_count": 24,
+    "baseline_contains_count": 26,
+    "swarm_contains_count": 25,
+    "baseline_avg_latency": 3.1925707860666384,
+    "swarm_avg_latency": 2.737979093100027,
+    "baseline_total_tokens": 7784,
+    "swarm_total_tokens": 21220,
+    "baseline_total_calls": 30,
+    "swarm_total_calls": 60
+  },
+  "records": [
+    {
+      "task": {
+        "id": "syn_001",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "lab email",
+            "text": "Maya said the Aurora ablation report would be discussed on Friday."
+          },
+          {
+            "t": 2,
+            "source": "Slack #aurora",
+            "text": "The Friday slot is now blocked by the safety review."
+          },
+          {
+            "t": 3,
+            "source": "Slack #aurora",
+            "text": "Maya moved the Aurora ablation discussion to Monday at 10 AM."
+          },
+          {
+            "t": 4,
+            "source": "calendar memo",
+            "text": "Final calendar shows Aurora ablation discussion on Monday, owner Maya."
+          }
+        ],
+        "question": "What day is the Aurora ablation discussion currently scheduled for?",
+        "gold_answer": "Monday"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Monday",
+          "confidence": 1.0,
+          "rationale": "The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Monday",
+              "confidence": 1.0,
+              "rationale": "The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo."
+            },
+            "model_response": {
+              "id": "chatcmpl-c52cef16-67c4-4688-b999-aee6ee0c6d57",
+              "created": 1778055721,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 61,
+                "prompt_tokens": 221,
+                "total_tokens": 282,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 221,
+          "output_tokens": 61,
+          "total_tokens": 282,
+          "latency_seconds": 7.256808790999457
+        },
+        "metrics": {
+          "gold_answer": "Monday",
+          "prediction": "Monday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Monday",
+          "confidence": 1.0,
+          "rationale": "Calendar memo and Slack confirm Monday.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Monday\",\"evidence_t\":[3,4],\"reason\":\"The calendar memo and Slack #aurora indicate the discussion is now on Monday.\"}\n```",
+              "parsed_output": {
+                "answer": "Monday",
+                "evidence_t": [
+                  3,
+                  4
+                ],
+                "reason": "The calendar memo and Slack #aurora indicate the discussion is now on Monday."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Monday\",\"confidence\":1.0,\"rationale\":\"Calendar memo and Slack confirm Monday.\"}",
+              "parsed_output": {
+                "final_answer": "Monday",
+                "confidence": 1.0,
+                "rationale": "Calendar memo and Slack confirm Monday."
+              }
+            },
+            "canonicalizer": {
+              "input": "Monday",
+              "output": "Monday"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 676,
+          "output_tokens": 63,
+          "total_tokens": 739,
+          "latency_seconds": 4.550156249999418
+        },
+        "metrics": {
+          "gold_answer": "Monday",
+          "prediction": "Monday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_002",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "finance email",
+            "text": "The startup budget for the wet-lab pilot is approved at $40,000."
+          },
+          {
+            "t": 2,
+            "source": "founder Slack",
+            "text": "Correction: the wet-lab pilot budget is $32,000, not $40,000."
+          },
+          {
+            "t": 3,
+            "source": "board memo",
+            "text": "Use $32,000 in the pilot plan sent to investors."
+          }
+        ],
+        "question": "Which topic was corrected in the stream?",
+        "gold_answer": "budget amount"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The wet-lab pilot budget.",
+          "confidence": 1.0,
+          "rationale": "Messages [t=1] and [t=2] explicitly state a correction regarding the wet-lab pilot budget, changing it from $40,000 to $32,000. Message [t=3] reinforces the $32,000 figure.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The wet-lab pilot budget.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Messages [t=1] and [t=2] explicitly state a correction regarding the wet-lab pilot budget, changing it from $40,000 to $32,000. Message [t=3] reinforces the $32,000 figure.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The wet-lab pilot budget.",
+              "confidence": 1.0,
+              "rationale": "Messages [t=1] and [t=2] explicitly state a correction regarding the wet-lab pilot budget, changing it from $40,000 to $32,000. Message [t=3] reinforces the $32,000 figure."
+            },
+            "model_response": {
+              "id": "chatcmpl-399425f3-aca7-4cbf-b2b9-0ec3766cb19b",
+              "created": 1778055726,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The wet-lab pilot budget.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Messages [t=1] and [t=2] explicitly state a correction regarding the wet-lab pilot budget, changing it from $40,000 to $32,000. Message [t=3] reinforces the $32,000 figure.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 99,
+                "prompt_tokens": 218,
+                "total_tokens": 317,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 218,
+          "output_tokens": 99,
+          "total_tokens": 317,
+          "latency_seconds": 4.60735137500069
+        },
+        "metrics": {
+          "gold_answer": "budget amount",
+          "prediction": "The wet-lab pilot budget.",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "budget amount",
+          "confidence": 1.0,
+          "rationale": "Directly answers the question and accurately identifies the topic of correction.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"wet-lab pilot budget\",\"evidence_t\":[1,2,3],\"reason\":\"The founder and board memo both correct the initial budget amount of $40,000 to $32,000.\"}\n```",
+              "parsed_output": {
+                "answer": "wet-lab pilot budget",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The founder and board memo both correct the initial budget amount of $40,000 to $32,000."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"wet-lab pilot budget\",\"confidence\":1.0,\"rationale\":\"Directly answers the question and accurately identifies the topic of correction.\"}",
+              "parsed_output": {
+                "final_answer": "wet-lab pilot budget",
+                "confidence": 1.0,
+                "rationale": "Directly answers the question and accurately identifies the topic of correction."
+              }
+            },
+            "canonicalizer": {
+              "input": "wet-lab pilot budget",
+              "output": "budget amount"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 692,
+          "output_tokens": 91,
+          "total_tokens": 783,
+          "latency_seconds": 3.0509212500001013
+        },
+        "metrics": {
+          "gold_answer": "budget amount",
+          "prediction": "budget amount",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_003",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "program email",
+            "text": "Dr. Rao will review the medication safety appendix."
+          },
+          {
+            "t": 2,
+            "source": "Slack #submissions",
+            "text": "Dr. Rao is unavailable during finals week."
+          },
+          {
+            "t": 3,
+            "source": "program email",
+            "text": "Dr. Lin is taking over the medication safety appendix review."
+          },
+          {
+            "t": 4,
+            "source": "checklist",
+            "text": "Safety appendix reviewer: Dr. Lin."
+          }
+        ],
+        "question": "Who is currently assigned to review the medication safety appendix?",
+        "gold_answer": "Dr. Lin"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Dr. Lin",
+          "confidence": 1.0,
+          "rationale": "The program email at t=3 and the checklist at t=4 both state that Dr. Lin is reviewing the medication safety appendix, superseding the initial assignment to Dr. Rao.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Dr. Lin\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The program email at t=3 and the checklist at t=4 both state that Dr. Lin is reviewing the medication safety appendix, superseding the initial assignment to Dr. Rao.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Dr. Lin",
+              "confidence": 1.0,
+              "rationale": "The program email at t=3 and the checklist at t=4 both state that Dr. Lin is reviewing the medication safety appendix, superseding the initial assignment to Dr. Rao."
+            },
+            "model_response": {
+              "id": "chatcmpl-105c5373-2ad2-4a3d-91fd-6ecd3913b031",
+              "created": 1778055729,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Dr. Lin\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The program email at t=3 and the checklist at t=4 both state that Dr. Lin is reviewing the medication safety appendix, superseding the initial assignment to Dr. Rao.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 73,
+                "prompt_tokens": 207,
+                "total_tokens": 280,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 207,
+          "output_tokens": 73,
+          "total_tokens": 280,
+          "latency_seconds": 3.5165411670004687
+        },
+        "metrics": {
+          "gold_answer": "Dr. Lin",
+          "prediction": "Dr. Lin",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Dr. Lin",
+          "confidence": 1.0,
+          "rationale": "Direct answer from stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Dr. Lin\",\"evidence_t\":[3,4],\"reason\":\"Email at t=3 and checklist at t=4 assign Dr. Lin.\"}\n```",
+              "parsed_output": {
+                "answer": "Dr. Lin",
+                "evidence_t": [
+                  3,
+                  4
+                ],
+                "reason": "Email at t=3 and checklist at t=4 assign Dr. Lin."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Dr. Lin\",\"confidence\":1.0,\"rationale\":\"Direct answer from stream.\"}",
+              "parsed_output": {
+                "final_answer": "Dr. Lin",
+                "confidence": 1.0,
+                "rationale": "Direct answer from stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "Dr. Lin",
+              "output": "Dr. Lin"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 652,
+          "output_tokens": 65,
+          "total_tokens": 717,
+          "latency_seconds": 2.618260125999768
+        },
+        "metrics": {
+          "gold_answer": "Dr. Lin",
+          "prediction": "Dr. Lin",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_004",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #cluster",
+            "text": "The embedding refresh is medium priority after lunch."
+          },
+          {
+            "t": 2,
+            "source": "pager note",
+            "text": "GPU queue failures are blocking all Aurora experiments."
+          },
+          {
+            "t": 3,
+            "source": "PI email",
+            "text": "Treat the GPU queue as the top priority until jobs restart."
+          },
+          {
+            "t": 4,
+            "source": "Slack #cluster",
+            "text": "Embedding refresh can wait until the GPU queue is stable."
+          }
+        ],
+        "question": "What is the current top priority?",
+        "gold_answer": "GPU queue"
+      },
+      "baseline": {
+        "result": {
+          "answer": "GPU queue stability",
+          "confidence": 1.0,
+          "rationale": "The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it remains so.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"GPU queue stability\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it remains so.\"\n}\n```",
+            "parsed_output": {
+              "answer": "GPU queue stability",
+              "confidence": 1.0,
+              "rationale": "The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it remains so."
+            },
+            "model_response": {
+              "id": "chatcmpl-d80c0708-d7ac-4224-9d3c-d386ab3d5e01",
+              "created": 1778055732,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"GPU queue stability\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it remains so.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 68,
+                "prompt_tokens": 207,
+                "total_tokens": 275,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 207,
+          "output_tokens": 68,
+          "total_tokens": 275,
+          "latency_seconds": 3.333555416999843
+        },
+        "metrics": {
+          "gold_answer": "GPU queue",
+          "prediction": "GPU queue stability",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "GPU queue",
+          "confidence": 1.0,
+          "rationale": "Directly stated as the top priority in the PI email.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"GPU queue\",\"evidence_t\":[2,3],\"reason\":\"PI email explicitly states to treat the GPU queue as the top priority until jobs restart.\"}\n```",
+              "parsed_output": {
+                "answer": "GPU queue",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "PI email explicitly states to treat the GPU queue as the top priority until jobs restart."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"GPU queue\",\"confidence\":1.0,\"rationale\":\"Directly stated as the top priority in the PI email.\"}\n",
+              "parsed_output": {
+                "final_answer": "GPU queue",
+                "confidence": 1.0,
+                "rationale": "Directly stated as the top priority in the PI email."
+              }
+            },
+            "canonicalizer": {
+              "input": "GPU queue",
+              "output": "GPU queue"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 651,
+          "output_tokens": 72,
+          "total_tokens": 723,
+          "latency_seconds": 2.7358772909992695
+        },
+        "metrics": {
+          "gold_answer": "GPU queue",
+          "prediction": "GPU queue",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_005",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "conference email",
+            "text": "The poster deadline for Project Cedar is May 14."
+          },
+          {
+            "t": 2,
+            "source": "Slack #cedar",
+            "text": "Cedar poster depends on the final figure from Noah."
+          },
+          {
+            "t": 3,
+            "source": "Slack #cedar",
+            "text": "Noah says the final figure will arrive May 17 after rerunning the assay."
+          },
+          {
+            "t": 4,
+            "source": "conference email",
+            "text": "The organizer granted Cedar an extension to match the final figure date."
+          }
+        ],
+        "question": "What is the current poster deadline for Project Cedar?",
+        "gold_answer": "May 17"
+      },
+      "baseline": {
+        "result": {
+          "answer": "May 17",
+          "confidence": 1.0,
+          "rationale": "The initial deadline was May 14, but the conference granted an extension to match the final figure date of May 17.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"May 17\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial deadline was May 14, but the conference granted an extension to match the final figure date of May 17.\"\n}\n```",
+            "parsed_output": {
+              "answer": "May 17",
+              "confidence": 1.0,
+              "rationale": "The initial deadline was May 14, but the conference granted an extension to match the final figure date of May 17."
+            },
+            "model_response": {
+              "id": "chatcmpl-9d41a2b1-94d2-4d84-81b1-74b3c2bb99cf",
+              "created": 1778055736,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"May 17\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial deadline was May 14, but the conference granted an extension to match the final figure date of May 17.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 64,
+                "prompt_tokens": 223,
+                "total_tokens": 287,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 223,
+          "output_tokens": 64,
+          "total_tokens": 287,
+          "latency_seconds": 3.29613716699987
+        },
+        "metrics": {
+          "gold_answer": "May 17",
+          "prediction": "May 17",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "May 14",
+          "confidence": null,
+          "rationale": "The email at t=1 states the deadline, and the email at t=4 grants an extension matching that date.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"May 14\",\"evidence_t\":[1,4],\"reason\":\"The email at t=1 states the deadline, and the email at t=4 grants an extension matching that date.\"}\n```",
+              "parsed_output": {
+                "answer": "May 14",
+                "evidence_t": [
+                  1,
+                  4
+                ],
+                "reason": "The email at t=1 states the deadline, and the email at t=4 grants an extension matching that date."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"May 14\",\"evidence_t\":[1,4],\"reason\":\"Email at t=1 states deadline; email at t=4 grants extension matching it.\"}",
+              "parsed_output": {
+                "final_answer": "May 14",
+                "evidence_t": [
+                  1,
+                  4
+                ],
+                "reason": "Email at t=1 states deadline; email at t=4 grants extension matching it."
+              }
+            },
+            "canonicalizer": {
+              "input": "May 14",
+              "output": "May 14"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 694,
+          "output_tokens": 89,
+          "total_tokens": 783,
+          "latency_seconds": 3.029279000000315
+        },
+        "metrics": {
+          "gold_answer": "May 17",
+          "prediction": "May 14",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_006",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "lab memo",
+            "text": "The protein-screen batch is labeled dataset v2."
+          },
+          {
+            "t": 2,
+            "source": "Slack #bio-ai",
+            "text": "Do not use v2; two rows were duplicated."
+          },
+          {
+            "t": 3,
+            "source": "data email",
+            "text": "Cleaned protein-screen files are now dataset v3."
+          },
+          {
+            "t": 4,
+            "source": "notebook note",
+            "text": "All analysis notebooks should point to dataset v3."
+          }
+        ],
+        "question": "Which dataset version should the analysis use now?",
+        "gold_answer": "v3"
+      },
+      "baseline": {
+        "result": {
+          "answer": "v3",
+          "confidence": 1.0,
+          "rationale": "Notebooks should point to dataset v3, as indicated by the notebook note.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"v3\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Notebooks should point to dataset v3, as indicated by the notebook note.\"\n}\n```",
+            "parsed_output": {
+              "answer": "v3",
+              "confidence": 1.0,
+              "rationale": "Notebooks should point to dataset v3, as indicated by the notebook note."
+            },
+            "model_response": {
+              "id": "chatcmpl-a6f7aaa3-6a67-4bc6-9194-3752845c88b7",
+              "created": 1778055738,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"v3\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Notebooks should point to dataset v3, as indicated by the notebook note.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 51,
+                "prompt_tokens": 213,
+                "total_tokens": 264,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 213,
+          "output_tokens": 51,
+          "total_tokens": 264,
+          "latency_seconds": 2.7122684159994606
+        },
+        "metrics": {
+          "gold_answer": "v3",
+          "prediction": "v3",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "v3",
+          "confidence": 1.0,
+          "rationale": "Direct answer from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"v3\",\"evidence_t\":[3,4],\"reason\":\"The email and notebook note state that all analysis notebooks should point to dataset v3.\"}\n```",
+              "parsed_output": {
+                "answer": "v3",
+                "evidence_t": [
+                  3,
+                  4
+                ],
+                "reason": "The email and notebook note state that all analysis notebooks should point to dataset v3."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"v3\",\"confidence\":1.0,\"rationale\":\"Direct answer from the stream.\"}",
+              "parsed_output": {
+                "final_answer": "v3",
+                "confidence": 1.0,
+                "rationale": "Direct answer from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "v3",
+              "output": "v3"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 663,
+          "output_tokens": 65,
+          "total_tokens": 728,
+          "latency_seconds": 2.633007374999579
+        },
+        "metrics": {
+          "gold_answer": "v3",
+          "prediction": "v3",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_007",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "calendar invite",
+            "text": "The Chandy group sync is in Annenberg 105."
+          },
+          {
+            "t": 2,
+            "source": "Slack #group",
+            "text": "Room update: Annenberg 105 is closed for AV work."
+          },
+          {
+            "t": 3,
+            "source": "calendar invite",
+            "text": "The Chandy group sync location is now Gates 314."
+          }
+        ],
+        "question": "Which topic changed from the earlier message?",
+        "gold_answer": "meeting location"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The location of the Chandy group sync.",
+          "confidence": 1.0,
+          "rationale": "The initial calendar invite stated the sync was in Annenberg 105, which was later updated to Gates 314 in a subsequent calendar invite.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The location of the Chandy group sync.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial calendar invite stated the sync was in Annenberg 105, which was later updated to Gates 314 in a subsequent calendar invite.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The location of the Chandy group sync.",
+              "confidence": 1.0,
+              "rationale": "The initial calendar invite stated the sync was in Annenberg 105, which was later updated to Gates 314 in a subsequent calendar invite."
+            },
+            "model_response": {
+              "id": "chatcmpl-431c3c25-25c9-4ffc-9b6c-865487fc4aed",
+              "created": 1778055742,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The location of the Chandy group sync.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial calendar invite stated the sync was in Annenberg 105, which was later updated to Gates 314 in a subsequent calendar invite.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 74,
+                "prompt_tokens": 202,
+                "total_tokens": 276,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 202,
+          "output_tokens": 74,
+          "total_tokens": 276,
+          "latency_seconds": 3.552816833000179
+        },
+        "metrics": {
+          "gold_answer": "meeting location",
+          "prediction": "The location of the Chandy group sync.",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "meeting location",
+          "confidence": 1.0,
+          "rationale": "The calendar invite specifies the location, which changed in the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Annenberg 105\",\"evidence_t\":[1,2,3],\"reason\":\"The calendar invite changed the location from Annenberg 105 to Gates 314.\"}\n```",
+              "parsed_output": {
+                "answer": "Annenberg 105",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The calendar invite changed the location from Annenberg 105 to Gates 314."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Annenberg 105\",\"confidence\":1.0,\"rationale\":\"The calendar invite specifies the location, which changed in the stream.\"}",
+              "parsed_output": {
+                "final_answer": "Annenberg 105",
+                "confidence": 1.0,
+                "rationale": "The calendar invite specifies the location, which changed in the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "Annenberg 105",
+              "output": "meeting location"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 657,
+          "output_tokens": 88,
+          "total_tokens": 745,
+          "latency_seconds": 2.977243625000483
+        },
+        "metrics": {
+          "gold_answer": "meeting location",
+          "prediction": "meeting location",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_008",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #paper",
+            "text": "Leah will upload the camera-ready PDF."
+          },
+          {
+            "t": 2,
+            "source": "email",
+            "text": "Leah can no longer access the submission portal."
+          },
+          {
+            "t": 3,
+            "source": "Slack #paper",
+            "text": "Sam has portal access and will upload the camera-ready PDF."
+          }
+        ],
+        "question": "Who is responsible for uploading the camera-ready PDF?",
+        "gold_answer": "Sam"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Sam",
+          "confidence": 1.0,
+          "rationale": "Initially, Leah was responsible, but she lost access. Sam now has portal access and will upload the PDF.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Sam\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Initially, Leah was responsible, but she lost access. Sam now has portal access and will upload the PDF.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Sam",
+              "confidence": 1.0,
+              "rationale": "Initially, Leah was responsible, but she lost access. Sam now has portal access and will upload the PDF."
+            },
+            "model_response": {
+              "id": "chatcmpl-d9c67af2-1ac7-4b0b-8486-cff4c4a8adf1",
+              "created": 1778055745,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Sam\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Initially, Leah was responsible, but she lost access. Sam now has portal access and will upload the PDF.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 56,
+                "prompt_tokens": 191,
+                "total_tokens": 247,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 191,
+          "output_tokens": 56,
+          "total_tokens": 247,
+          "latency_seconds": 2.881557707999491
+        },
+        "metrics": {
+          "gold_answer": "Sam",
+          "prediction": "Sam",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Leah",
+          "confidence": 1.0,
+          "rationale": "Direct answer to the question from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Leah\",\"evidence_t\":[1,3],\"reason\":\"Leah is responsible for uploading the camera-ready PDF according to the stream.\"}\n```",
+              "parsed_output": {
+                "answer": "Leah",
+                "evidence_t": [
+                  1,
+                  3
+                ],
+                "reason": "Leah is responsible for uploading the camera-ready PDF according to the stream."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Leah\",\"confidence\":1.0,\"rationale\":\"Direct answer to the question from the stream.\"}",
+              "parsed_output": {
+                "final_answer": "Leah",
+                "confidence": 1.0,
+                "rationale": "Direct answer to the question from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "Leah",
+              "output": "Leah"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 617,
+          "output_tokens": 67,
+          "total_tokens": 684,
+          "latency_seconds": 2.5826504580008987
+        },
+        "metrics": {
+          "gold_answer": "Sam",
+          "prediction": "Leah",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_009",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "daily standup",
+            "text": "Today's startup tasks are pitch deck polish and assay cleanup."
+          },
+          {
+            "t": 2,
+            "source": "investor email",
+            "text": "Please send the revised pitch deck by 3 PM today."
+          },
+          {
+            "t": 3,
+            "source": "Slack #founders",
+            "text": "Assay cleanup is moved to tomorrow; pitch deck is urgent today."
+          }
+        ],
+        "question": "What task is urgent today?",
+        "gold_answer": "pitch deck"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Pitch deck polish",
+          "confidence": 1.0,
+          "rationale": "The Slack message explicitly states the pitch deck is urgent today.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Pitch deck polish\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The Slack message explicitly states the pitch deck is urgent today.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Pitch deck polish",
+              "confidence": 1.0,
+              "rationale": "The Slack message explicitly states the pitch deck is urgent today."
+            },
+            "model_response": {
+              "id": "chatcmpl-f8fd9647-d621-42f3-bf32-fa1102b86344",
+              "created": 1778055748,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Pitch deck polish\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The Slack message explicitly states the pitch deck is urgent today.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 48,
+                "prompt_tokens": 194,
+                "total_tokens": 242,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 194,
+          "output_tokens": 48,
+          "total_tokens": 242,
+          "latency_seconds": 2.6172010419995786
+        },
+        "metrics": {
+          "gold_answer": "pitch deck",
+          "prediction": "Pitch deck polish",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "pitch deck",
+          "confidence": 1.0,
+          "rationale": "Slack indicates pitch deck is urgent",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"pitch deck\",\"evidence_t\":[2,3],\"reason\":\"Slack #founders indicates pitch deck is urgent today\"}\n```",
+              "parsed_output": {
+                "answer": "pitch deck",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "Slack #founders indicates pitch deck is urgent today"
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"pitch deck\",\"confidence\":1.0,\"rationale\":\"Slack indicates pitch deck is urgent\"}",
+              "parsed_output": {
+                "final_answer": "pitch deck",
+                "confidence": 1.0,
+                "rationale": "Slack indicates pitch deck is urgent"
+              }
+            },
+            "canonicalizer": {
+              "input": "pitch deck",
+              "output": "pitch deck"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 617,
+          "output_tokens": 57,
+          "total_tokens": 674,
+          "latency_seconds": 2.4627230409996628
+        },
+        "metrics": {
+          "gold_answer": "pitch deck",
+          "prediction": "pitch deck",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_010",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #experiments",
+            "text": "Run A failed because the reagent shipment was late."
+          },
+          {
+            "t": 2,
+            "source": "shipping email",
+            "text": "The reagent shipment for Run A arrived Tuesday morning."
+          },
+          {
+            "t": 3,
+            "source": "lab notebook",
+            "text": "After the Tuesday shipment arrived, Run A was restarted."
+          },
+          {
+            "t": 4,
+            "source": "status memo",
+            "text": "Run A is now waiting on microscope time."
+          }
+        ],
+        "question": "What is Run A currently waiting on?",
+        "gold_answer": "microscope time"
+      },
+      "baseline": {
+        "result": {
+          "answer": "microscope time",
+          "confidence": 1.0,
+          "rationale": "The status memo states Run A is waiting on microscope time.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"microscope time\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The status memo states Run A is waiting on microscope time.\"\n}\n```",
+            "parsed_output": {
+              "answer": "microscope time",
+              "confidence": 1.0,
+              "rationale": "The status memo states Run A is waiting on microscope time."
+            },
+            "model_response": {
+              "id": "chatcmpl-0f5e5677-1088-47ff-9062-b2d3e935eeaa",
+              "created": 1778055750,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"microscope time\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The status memo states Run A is waiting on microscope time.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 48,
+                "prompt_tokens": 206,
+                "total_tokens": 254,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 206,
+          "output_tokens": 48,
+          "total_tokens": 254,
+          "latency_seconds": 2.595868542000062
+        },
+        "metrics": {
+          "gold_answer": "microscope time",
+          "prediction": "microscope time",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "microscope time",
+          "confidence": 1.0,
+          "rationale": "Directly stated in the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"microscope time\",\"evidence_t\":[1,2,3,4],\"reason\":\"The status memo states 'Run A is now waiting on microscope time'.\"}\n```",
+              "parsed_output": {
+                "answer": "microscope time",
+                "evidence_t": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "reason": "The status memo states 'Run A is now waiting on microscope time'."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"microscope time\",\"confidence\":1.0,\"rationale\":\"Directly stated in the stream.\"}",
+              "parsed_output": {
+                "final_answer": "microscope time",
+                "confidence": 1.0,
+                "rationale": "Directly stated in the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "microscope time",
+              "output": "microscope time"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 651,
+          "output_tokens": 69,
+          "total_tokens": 720,
+          "latency_seconds": 2.76559700100006
+        },
+        "metrics": {
+          "gold_answer": "microscope time",
+          "prediction": "microscope time",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_011",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #gaia-plan",
+            "text": "We will start with GAIA Level 2 once the harness exists."
+          },
+          {
+            "t": 2,
+            "source": "PI feedback",
+            "text": "For the first validation, use GAIA Level 1 only."
+          },
+          {
+            "t": 3,
+            "source": "planning doc",
+            "text": "Next benchmark after synthetic streams: GAIA Level 1 validation subset."
+          }
+        ],
+        "question": "Which GAIA level is planned next?",
+        "gold_answer": "Level 1"
+      },
+      "baseline": {
+        "result": {
+          "answer": "GAIA Level 1",
+          "confidence": 0.9,
+          "rationale": "The planning doc states the next benchmark is a GAIA Level 1 validation subset, superseding the earlier mention of Level 2.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"GAIA Level 1\",\n  \"confidence\": 0.9,\n  \"rationale\": \"The planning doc states the next benchmark is a GAIA Level 1 validation subset, superseding the earlier mention of Level 2.\"\n}\n```",
+            "parsed_output": {
+              "answer": "GAIA Level 1",
+              "confidence": 0.9,
+              "rationale": "The planning doc states the next benchmark is a GAIA Level 1 validation subset, superseding the earlier mention of Level 2."
+            },
+            "model_response": {
+              "id": "chatcmpl-dd2f314c-eb25-4ebe-9585-613b78bf5d12",
+              "created": 1778055753,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"GAIA Level 1\",\n  \"confidence\": 0.9,\n  \"rationale\": \"The planning doc states the next benchmark is a GAIA Level 1 validation subset, superseding the earlier mention of Level 2.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 65,
+                "prompt_tokens": 200,
+                "total_tokens": 265,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 200,
+          "output_tokens": 65,
+          "total_tokens": 265,
+          "latency_seconds": 3.221309499999734
+        },
+        "metrics": {
+          "gold_answer": "Level 1",
+          "prediction": "GAIA Level 1",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "GAIA Level 1",
+          "confidence": 1.0,
+          "rationale": "Direct answer to the question from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"GAIA Level 1\",\"evidence_t\":[1,2,3],\"reason\":\"The stream indicates a progression from Level 2 to Level 1 for validation, and then a benchmark using Level 1.\"}\n```",
+              "parsed_output": {
+                "answer": "GAIA Level 1",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The stream indicates a progression from Level 2 to Level 1 for validation, and then a benchmark using Level 1."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"GAIA Level 1\",\"confidence\":1.0,\"rationale\":\"Direct answer to the question from the stream.\"}\n",
+              "parsed_output": {
+                "final_answer": "GAIA Level 1",
+                "confidence": 1.0,
+                "rationale": "Direct answer to the question from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "GAIA Level 1",
+              "output": "GAIA Level 1"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 653,
+          "output_tokens": 85,
+          "total_tokens": 738,
+          "latency_seconds": 2.9143171249997977
+        },
+        "metrics": {
+          "gold_answer": "Level 1",
+          "prediction": "GAIA Level 1",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_012",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "submission email",
+            "text": "The paper title is listed as Adaptive Swarms for Stream Reasoning."
+          },
+          {
+            "t": 2,
+            "source": "coauthor Slack",
+            "text": "Use the shorter title: Small Agents for Persistent Streams."
+          },
+          {
+            "t": 3,
+            "source": "Overleaf comment",
+            "text": "Title page updated to Small Agents for Persistent Streams."
+          }
+        ],
+        "question": "Which topic was revised?",
+        "gold_answer": "paper title"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The paper title.",
+          "confidence": 1.0,
+          "rationale": "The stream indicates the paper title was initially 'Adaptive Swarms for Stream Reasoning' but was revised to 'Small Agents for Persistent Streams'.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The paper title.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The stream indicates the paper title was initially 'Adaptive Swarms for Stream Reasoning' but was revised to 'Small Agents for Persistent Streams'.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The paper title.",
+              "confidence": 1.0,
+              "rationale": "The stream indicates the paper title was initially 'Adaptive Swarms for Stream Reasoning' but was revised to 'Small Agents for Persistent Streams'."
+            },
+            "model_response": {
+              "id": "chatcmpl-67354366-7c14-407b-a099-8606aadba5c3",
+              "created": 1778055757,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The paper title.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The stream indicates the paper title was initially 'Adaptive Swarms for Stream Reasoning' but was revised to 'Small Agents for Persistent Streams'.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 63,
+                "prompt_tokens": 189,
+                "total_tokens": 252,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 189,
+          "output_tokens": 63,
+          "total_tokens": 252,
+          "latency_seconds": 3.1512207080004373
+        },
+        "metrics": {
+          "gold_answer": "paper title",
+          "prediction": "The paper title.",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "paper title",
+          "confidence": 1.0,
+          "rationale": "Concise answer reflecting the revision.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"paper title\",\"evidence_t\":[1,2,3],\"reason\":\"The Slack message and Overleaf comment both refer to a title change.\"}\n```",
+              "parsed_output": {
+                "answer": "paper title",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The Slack message and Overleaf comment both refer to a title change."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"paper title\",\"confidence\":1.0,\"rationale\":\"Concise answer reflecting the revision.\"}",
+              "parsed_output": {
+                "final_answer": "paper title",
+                "confidence": 1.0,
+                "rationale": "Concise answer reflecting the revision."
+              }
+            },
+            "canonicalizer": {
+              "input": "paper title",
+              "output": "paper title"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 614,
+          "output_tokens": 65,
+          "total_tokens": 679,
+          "latency_seconds": 2.5491777500001263
+        },
+        "metrics": {
+          "gold_answer": "paper title",
+          "prediction": "paper title",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_013",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #ops",
+            "text": "Priya owns the OpenRouter key rotation."
+          },
+          {
+            "t": 2,
+            "source": "email",
+            "text": "Priya is traveling during the security window."
+          },
+          {
+            "t": 3,
+            "source": "Slack #ops",
+            "text": "Mateo will handle the OpenRouter key rotation instead."
+          },
+          {
+            "t": 4,
+            "source": "security checklist",
+            "text": "Key rotation owner: Mateo."
+          }
+        ],
+        "question": "Who owns the OpenRouter key rotation now?",
+        "gold_answer": "Mateo"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Mateo",
+          "confidence": 1.0,
+          "rationale": "Later messages state Mateo will handle the key rotation and the security checklist confirms Mateo is the owner.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Mateo\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Later messages state Mateo will handle the key rotation and the security checklist confirms Mateo is the owner.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Mateo",
+              "confidence": 1.0,
+              "rationale": "Later messages state Mateo will handle the key rotation and the security checklist confirms Mateo is the owner."
+            },
+            "model_response": {
+              "id": "chatcmpl-98055da8-94a5-4021-8ab8-57156d31dea2",
+              "created": 1778055759,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Mateo\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Later messages state Mateo will handle the key rotation and the security checklist confirms Mateo is the owner.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 54,
+                "prompt_tokens": 199,
+                "total_tokens": 253,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 199,
+          "output_tokens": 54,
+          "total_tokens": 253,
+          "latency_seconds": 2.8452692499995464
+        },
+        "metrics": {
+          "gold_answer": "Mateo",
+          "prediction": "Mateo",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Mateo",
+          "confidence": null,
+          "rationale": "The security checklist explicitly states Mateo as the key rotation owner.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Mateo\",\"evidence_t\":[3,4],\"reason\":\"The security checklist explicitly states Mateo as the key rotation owner.\"}\n```",
+              "parsed_output": {
+                "answer": "Mateo",
+                "evidence_t": [
+                  3,
+                  4
+                ],
+                "reason": "The security checklist explicitly states Mateo as the key rotation owner."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Mateo\",\"evidence_t\":[3,4],\"reason\":\"Security checklist indicates Mateo\"}",
+              "parsed_output": {
+                "final_answer": "Mateo",
+                "evidence_t": [
+                  3,
+                  4
+                ],
+                "reason": "Security checklist indicates Mateo"
+              }
+            },
+            "canonicalizer": {
+              "input": "Mateo",
+              "output": "Mateo"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 629,
+          "output_tokens": 59,
+          "total_tokens": 688,
+          "latency_seconds": 2.5007542079993073
+        },
+        "metrics": {
+          "gold_answer": "Mateo",
+          "prediction": "Mateo",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_014",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "lab Slack",
+            "text": "The wet-lab team wants the fluorescence plots first."
+          },
+          {
+            "t": 2,
+            "source": "compliance email",
+            "text": "The IRB response is due before any plots can be shared externally."
+          },
+          {
+            "t": 3,
+            "source": "PI Slack",
+            "text": "Make the IRB response priority one; plots come after approval."
+          }
+        ],
+        "question": "What should be handled first?",
+        "gold_answer": "IRB response"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The IRB response",
+          "confidence": 1.0,
+          "rationale": "The PI Slack message explicitly states that the IRB response takes priority, and plots come after approval.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The IRB response\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI Slack message explicitly states that the IRB response takes priority, and plots come after approval.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The IRB response",
+              "confidence": 1.0,
+              "rationale": "The PI Slack message explicitly states that the IRB response takes priority, and plots come after approval."
+            },
+            "model_response": {
+              "id": "chatcmpl-6842a97b-f15c-48dc-b753-6495b63955c5",
+              "created": 1778055762,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The IRB response\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI Slack message explicitly states that the IRB response takes priority, and plots come after approval.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 55,
+                "prompt_tokens": 190,
+                "total_tokens": 245,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 190,
+          "output_tokens": 55,
+          "total_tokens": 245,
+          "latency_seconds": 2.83991316599986
+        },
+        "metrics": {
+          "gold_answer": "IRB response",
+          "prediction": "The IRB response",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "IRB response",
+          "confidence": 1.0,
+          "rationale": "Directly stated as priority one in the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"IRB response\",\"evidence_t\":[1,2,3],\"reason\":\"The PI explicitly states the IRB response is priority one, and plots cannot be shared until approved.\"}\n```",
+              "parsed_output": {
+                "answer": "IRB response",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The PI explicitly states the IRB response is priority one, and plots cannot be shared until approved."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"IRB response\",\"confidence\":1.0,\"rationale\":\"Directly stated as priority one in the stream.\"}",
+              "parsed_output": {
+                "final_answer": "IRB response",
+                "confidence": 1.0,
+                "rationale": "Directly stated as priority one in the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "IRB response",
+              "output": "IRB response"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 622,
+          "output_tokens": 75,
+          "total_tokens": 697,
+          "latency_seconds": 2.7237046669997653
+        },
+        "metrics": {
+          "gold_answer": "IRB response",
+          "prediction": "IRB response",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_015",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "cluster email",
+            "text": "Job 812 writes checkpoints to /scratch/aurora."
+          },
+          {
+            "t": 2,
+            "source": "Slack #cluster",
+            "text": "The /scratch filesystem is full, so job 812 cannot checkpoint."
+          },
+          {
+            "t": 3,
+            "source": "admin notice",
+            "text": "Move active checkpoints to /checkpoint until /scratch is cleaned."
+          },
+          {
+            "t": 4,
+            "source": "Slack #cluster",
+            "text": "Job 812 has been reconfigured to use /checkpoint."
+          }
+        ],
+        "question": "Where should job 812 write checkpoints now?",
+        "gold_answer": "/checkpoint"
+      },
+      "baseline": {
+        "result": {
+          "answer": "/checkpoint",
+          "confidence": 1.0,
+          "rationale": "Message [t=4] states that job 812 has been reconfigured to use /checkpoint.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"/checkpoint\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Message [t=4] states that job 812 has been reconfigured to use /checkpoint.\"\n}\n```",
+            "parsed_output": {
+              "answer": "/checkpoint",
+              "confidence": 1.0,
+              "rationale": "Message [t=4] states that job 812 has been reconfigured to use /checkpoint."
+            },
+            "model_response": {
+              "id": "chatcmpl-edb0d151-bce0-4682-b336-08de34ca1645",
+              "created": 1778055765,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"/checkpoint\",\n  \"confidence\": 1.0,\n  \"rationale\": \"Message [t=4] states that job 812 has been reconfigured to use /checkpoint.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 56,
+                "prompt_tokens": 226,
+                "total_tokens": 282,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 226,
+          "output_tokens": 56,
+          "total_tokens": 282,
+          "latency_seconds": 3.0104714589997457
+        },
+        "metrics": {
+          "gold_answer": "/checkpoint",
+          "prediction": "/checkpoint",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "/checkpoint",
+          "confidence": 1.0,
+          "rationale": "Direct answer from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"/checkpoint\",\"evidence_t\":[2,4],\"reason\":\"Job 812 is now reconfigured to use /checkpoint.\"}\n```",
+              "parsed_output": {
+                "answer": "/checkpoint",
+                "evidence_t": [
+                  2,
+                  4
+                ],
+                "reason": "Job 812 is now reconfigured to use /checkpoint."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"/checkpoint\",\"confidence\":1.0,\"rationale\":\"Direct answer from the stream.\"}",
+              "parsed_output": {
+                "final_answer": "/checkpoint",
+                "confidence": 1.0,
+                "rationale": "Direct answer from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "/checkpoint",
+              "output": "/checkpoint"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 686,
+          "output_tokens": 62,
+          "total_tokens": 748,
+          "latency_seconds": 2.583537333000095
+        },
+        "metrics": {
+          "gold_answer": "/checkpoint",
+          "prediction": "/checkpoint",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_016",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "seminar email",
+            "text": "Professor Chandy's seminar prep call is at 2 PM."
+          },
+          {
+            "t": 2,
+            "source": "Slack DM",
+            "text": "2 PM conflicts with office hours."
+          },
+          {
+            "t": 3,
+            "source": "calendar update",
+            "text": "Seminar prep call moved to 4 PM."
+          }
+        ],
+        "question": "What time is the seminar prep call now?",
+        "gold_answer": "4 PM"
+      },
+      "baseline": {
+        "result": {
+          "answer": "4 PM",
+          "confidence": 1.0,
+          "rationale": "The calendar update at t=3 states the seminar prep call is now at 4 PM, superseding the earlier time.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"4 PM\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The calendar update at t=3 states the seminar prep call is now at 4 PM, superseding the earlier time.\"\n}\n```",
+            "parsed_output": {
+              "answer": "4 PM",
+              "confidence": 1.0,
+              "rationale": "The calendar update at t=3 states the seminar prep call is now at 4 PM, superseding the earlier time."
+            },
+            "model_response": {
+              "id": "chatcmpl-01dcdb09-a888-452f-9741-11bba1b34984",
+              "created": 1778055768,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"4 PM\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The calendar update at t=3 states the seminar prep call is now at 4 PM, superseding the earlier time.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 60,
+                "prompt_tokens": 188,
+                "total_tokens": 248,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 188,
+          "output_tokens": 60,
+          "total_tokens": 248,
+          "latency_seconds": 3.034084958000676
+        },
+        "metrics": {
+          "gold_answer": "4 PM",
+          "prediction": "4 PM",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "4 PM",
+          "confidence": 1.0,
+          "rationale": "Calendar update confirms time.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"4 PM\",\"evidence_t\":[3],\"reason\":\"The calendar update indicates the call is now at 4 PM.\"}\n```",
+              "parsed_output": {
+                "answer": "4 PM",
+                "evidence_t": [
+                  3
+                ],
+                "reason": "The calendar update indicates the call is now at 4 PM."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"4 PM\",\"confidence\":1.0,\"rationale\":\"Calendar update confirms time.\"}",
+              "parsed_output": {
+                "final_answer": "4 PM",
+                "confidence": 1.0,
+                "rationale": "Calendar update confirms time."
+              }
+            },
+            "canonicalizer": {
+              "input": "4 PM",
+              "output": "4 PM"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 608,
+          "output_tokens": 58,
+          "total_tokens": 666,
+          "latency_seconds": 2.4426080410003124
+        },
+        "metrics": {
+          "gold_answer": "4 PM",
+          "prediction": "4 PM",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_017",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "data README",
+            "text": "The patient cohort excludes participants over 65."
+          },
+          {
+            "t": 2,
+            "source": "clinical email",
+            "text": "Correction: the cohort excludes participants under 18, not over 65."
+          },
+          {
+            "t": 3,
+            "source": "data README",
+            "text": "Eligibility filter updated: exclude under 18."
+          }
+        ],
+        "question": "Which criterion was contradicted and corrected?",
+        "gold_answer": "age exclusion"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Exclusion of participants over 65.",
+          "confidence": 1.0,
+          "rationale": "The initial README stated exclusion of those over 65, which was then corrected to exclude those under 18.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Exclusion of participants over 65.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial README stated exclusion of those over 65, which was then corrected to exclude those under 18.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Exclusion of participants over 65.",
+              "confidence": 1.0,
+              "rationale": "The initial README stated exclusion of those over 65, which was then corrected to exclude those under 18."
+            },
+            "model_response": {
+              "id": "chatcmpl-d0ba022a-e317-4146-b27d-c976866f228c",
+              "created": 1778055771,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Exclusion of participants over 65.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial README stated exclusion of those over 65, which was then corrected to exclude those under 18.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 65,
+                "prompt_tokens": 192,
+                "total_tokens": 257,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 192,
+          "output_tokens": 65,
+          "total_tokens": 257,
+          "latency_seconds": 3.230563333000646
+        },
+        "metrics": {
+          "gold_answer": "age exclusion",
+          "prediction": "Exclusion of participants over 65.",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "age exclusion",
+          "confidence": null,
+          "rationale": "The README initially stated excluding participants over 65, while the email and updated README corrected this to excluding participants under 18.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"age exclusion\",\"evidence_t\":[1,2,3],\"reason\":\"The README initially stated excluding participants over 65, while the email and updated README corrected this to excluding participants under 18.\"}\n```",
+              "parsed_output": {
+                "answer": "age exclusion",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The README initially stated excluding participants over 65, while the email and updated README corrected this to excluding participants under 18."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"age exclusion\",\"evidence_t\":[1,2,3],\"reason\":\"The README initially stated excluding participants over 65, while the email and updated README corrected this to excluding participants under 18.\"}",
+              "parsed_output": {
+                "final_answer": "age exclusion",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The README initially stated excluding participants over 65, while the email and updated README corrected this to excluding participants under 18."
+              }
+            },
+            "canonicalizer": {
+              "input": "age exclusion",
+              "output": "age exclusion"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 633,
+          "output_tokens": 101,
+          "total_tokens": 734,
+          "latency_seconds": 3.1134564580006554
+        },
+        "metrics": {
+          "gold_answer": "age exclusion",
+          "prediction": "age exclusion",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_018",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #demo",
+            "text": "Jules will demo the medication dashboard."
+          },
+          {
+            "t": 2,
+            "source": "calendar note",
+            "text": "Jules has a qualifying exam at the demo time."
+          },
+          {
+            "t": 3,
+            "source": "Slack #demo",
+            "text": "Nina will demo the medication dashboard."
+          }
+        ],
+        "question": "Who will demo the medication dashboard?",
+        "gold_answer": "Nina"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Nina",
+          "confidence": 1.0,
+          "rationale": "The latest message at t=3 states Nina will demo the medication dashboard, superseding the earlier message at t=1.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Nina\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The latest message at t=3 states Nina will demo the medication dashboard, superseding the earlier message at t=1.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Nina",
+              "confidence": 1.0,
+              "rationale": "The latest message at t=3 states Nina will demo the medication dashboard, superseding the earlier message at t=1."
+            },
+            "model_response": {
+              "id": "chatcmpl-513758fa-9717-4f0f-8f5b-e6bcdd8586d4",
+              "created": 1778055774,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Nina\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The latest message at t=3 states Nina will demo the medication dashboard, superseding the earlier message at t=1.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 59,
+                "prompt_tokens": 181,
+                "total_tokens": 240,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 181,
+          "output_tokens": 59,
+          "total_tokens": 240,
+          "latency_seconds": 2.8810172080002303
+        },
+        "metrics": {
+          "gold_answer": "Nina",
+          "prediction": "Nina",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Jules",
+          "confidence": 1.0,
+          "rationale": "Direct answer from the stream",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Jules\",\"evidence_t\":[1,2,3],\"reason\":\"The stream indicates Jules and Nina will demo the dashboard.\"}\n```",
+              "parsed_output": {
+                "answer": "Jules",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The stream indicates Jules and Nina will demo the dashboard."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Jules\",\"confidence\":1.0,\"rationale\":\"Direct answer from the stream\"}",
+              "parsed_output": {
+                "final_answer": "Jules",
+                "confidence": 1.0,
+                "rationale": "Direct answer from the stream"
+              }
+            },
+            "canonicalizer": {
+              "input": "Jules",
+              "output": "Jules"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 594,
+          "output_tokens": 60,
+          "total_tokens": 654,
+          "latency_seconds": 2.496428375000505
+        },
+        "metrics": {
+          "gold_answer": "Nina",
+          "prediction": "Jules",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_019",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "standup notes",
+            "text": "The team listed UI cleanup, model evals, and memo drafting."
+          },
+          {
+            "t": 2,
+            "source": "advisor email",
+            "text": "Please send model evals before our meeting; UI cleanup can wait."
+          },
+          {
+            "t": 3,
+            "source": "Slack #evals",
+            "text": "Everyone focus on model evals until the advisor packet is ready."
+          }
+        ],
+        "question": "Which work item has priority?",
+        "gold_answer": "model evals"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Model evals",
+          "confidence": 0.9,
+          "rationale": "The advisor email and Slack message both emphasize the priority of model evals.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Model evals\",\n  \"confidence\": 0.9,\n  \"rationale\": \"The advisor email and Slack message both emphasize the priority of model evals.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Model evals",
+              "confidence": 0.9,
+              "rationale": "The advisor email and Slack message both emphasize the priority of model evals."
+            },
+            "model_response": {
+              "id": "chatcmpl-c48567cf-2f20-475d-b885-bb8241906d63",
+              "created": 1778055777,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Model evals\",\n  \"confidence\": 0.9,\n  \"rationale\": \"The advisor email and Slack message both emphasize the priority of model evals.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 51,
+                "prompt_tokens": 198,
+                "total_tokens": 249,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 198,
+          "output_tokens": 51,
+          "total_tokens": 249,
+          "latency_seconds": 2.702889624999443
+        },
+        "metrics": {
+          "gold_answer": "model evals",
+          "prediction": "Model evals",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "model evals",
+          "confidence": 1.0,
+          "rationale": "Advisor email and Slack channel prioritize model evals.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"model evals\",\"evidence_t\":[2,3],\"reason\":\"The advisor explicitly requests model evals before the meeting and Slack confirms this is the priority.\"}\n```",
+              "parsed_output": {
+                "answer": "model evals",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "The advisor explicitly requests model evals before the meeting and Slack confirms this is the priority."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"model evals\",\"confidence\":1.0,\"rationale\":\"Advisor email and Slack channel prioritize model evals.\"}\n",
+              "parsed_output": {
+                "final_answer": "model evals",
+                "confidence": 1.0,
+                "rationale": "Advisor email and Slack channel prioritize model evals."
+              }
+            },
+            "canonicalizer": {
+              "input": "model evals",
+              "output": "model evals"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 636,
+          "output_tokens": 73,
+          "total_tokens": 709,
+          "latency_seconds": 2.7063053340007173
+        },
+        "metrics": {
+          "gold_answer": "model evals",
+          "prediction": "model evals",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_020",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "email",
+            "text": "The lab retreat dinner is planned for Thursday."
+          },
+          {
+            "t": 2,
+            "source": "Slack #retreat",
+            "text": "Thursday dinner depends on whether the Pasadena room is available."
+          },
+          {
+            "t": 3,
+            "source": "venue email",
+            "text": "The Pasadena room is unavailable Thursday but open Friday."
+          },
+          {
+            "t": 4,
+            "source": "Slack #retreat",
+            "text": "Move the lab retreat dinner to Friday."
+          }
+        ],
+        "question": "What day is the lab retreat dinner now?",
+        "gold_answer": "Friday"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Friday",
+          "confidence": 1.0,
+          "rationale": "The dinner was initially planned for Thursday, but due to room unavailability, it was moved to Friday.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Friday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The dinner was initially planned for Thursday, but due to room unavailability, it was moved to Friday.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Friday",
+              "confidence": 1.0,
+              "rationale": "The dinner was initially planned for Thursday, but due to room unavailability, it was moved to Friday."
+            },
+            "model_response": {
+              "id": "chatcmpl-e8bd2933-b328-40c9-af86-718b1024a5fe",
+              "created": 1778055780,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Friday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The dinner was initially planned for Thursday, but due to room unavailability, it was moved to Friday.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 54,
+                "prompt_tokens": 205,
+                "total_tokens": 259,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 205,
+          "output_tokens": 54,
+          "total_tokens": 259,
+          "latency_seconds": 2.825248042000567
+        },
+        "metrics": {
+          "gold_answer": "Friday",
+          "prediction": "Friday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Friday",
+          "confidence": 1.0,
+          "rationale": "Direct answer from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Friday\",\"evidence_t\":[2,3,4],\"reason\":\"The Slack channel #retreat indicates a move to Friday due to the Pasadena room being unavailable on Thursday.\"}\n```",
+              "parsed_output": {
+                "answer": "Friday",
+                "evidence_t": [
+                  2,
+                  3,
+                  4
+                ],
+                "reason": "The Slack channel #retreat indicates a move to Friday due to the Pasadena room being unavailable on Thursday."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Friday\",\"confidence\":1.0,\"rationale\":\"Direct answer from the stream.\"}",
+              "parsed_output": {
+                "final_answer": "Friday",
+                "confidence": 1.0,
+                "rationale": "Direct answer from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "Friday",
+              "output": "Friday"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 650,
+          "output_tokens": 68,
+          "total_tokens": 718,
+          "latency_seconds": 2.660364166000363
+        },
+        "metrics": {
+          "gold_answer": "Friday",
+          "prediction": "Friday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_021",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "article feed",
+            "text": "Article digest v1 says the FDA panel meets April 9."
+          },
+          {
+            "t": 2,
+            "source": "article correction",
+            "text": "The FDA panel date was misstated; it meets April 11."
+          },
+          {
+            "t": 3,
+            "source": "research memo",
+            "text": "Use April 11 for the FDA panel timeline."
+          }
+        ],
+        "question": "What date should be used for the FDA panel meeting?",
+        "gold_answer": "April 11"
+      },
+      "baseline": {
+        "result": {
+          "answer": "April 11",
+          "confidence": 1.0,
+          "rationale": "The initial date of April 9 was corrected to April 11, and the research memo confirms using April 11.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"April 11\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial date of April 9 was corrected to April 11, and the research memo confirms using April 11.\"\n}\n```",
+            "parsed_output": {
+              "answer": "April 11",
+              "confidence": 1.0,
+              "rationale": "The initial date of April 9 was corrected to April 11, and the research memo confirms using April 11."
+            },
+            "model_response": {
+              "id": "chatcmpl-c08ef00e-1b57-46b2-883a-fcd55cbbc6ad",
+              "created": 1778055783,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"April 11\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial date of April 9 was corrected to April 11, and the research memo confirms using April 11.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 63,
+                "prompt_tokens": 198,
+                "total_tokens": 261,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 198,
+          "output_tokens": 63,
+          "total_tokens": 261,
+          "latency_seconds": 3.1466798749997906
+        },
+        "metrics": {
+          "gold_answer": "April 11",
+          "prediction": "April 11",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "April 11",
+          "confidence": null,
+          "rationale": "The latest article correction and research memo confirm April 11.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"April 11\",\"evidence_t\":[2,3],\"reason\":\"The latest article correction and research memo confirm April 11.\"}\n```",
+              "parsed_output": {
+                "answer": "April 11",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "The latest article correction and research memo confirm April 11."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"April 11\",\"evidence_t\":[2,3],\"reason\":\"Latest confirmation\"}",
+              "parsed_output": {
+                "final_answer": "April 11",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "Latest confirmation"
+              }
+            },
+            "canonicalizer": {
+              "input": "April 11",
+              "output": "April 11"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 633,
+          "output_tokens": 62,
+          "total_tokens": 695,
+          "latency_seconds": 2.5375289579997116
+        },
+        "metrics": {
+          "gold_answer": "April 11",
+          "prediction": "April 11",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_022",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #launch",
+            "text": "The beta launch audience is clinicians only."
+          },
+          {
+            "t": 2,
+            "source": "PM email",
+            "text": "Update: beta launch audience includes clinicians and researchers."
+          },
+          {
+            "t": 3,
+            "source": "launch brief",
+            "text": "Audience now listed as clinicians and researchers."
+          }
+        ],
+        "question": "Which topic changed in the launch plan?",
+        "gold_answer": "launch audience"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The beta launch audience.",
+          "confidence": 0.9,
+          "rationale": "The initial message stated the audience was clinicians only, but subsequent messages expanded it to include researchers.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The beta launch audience.\",\n  \"confidence\": 0.9,\n  \"rationale\": \"The initial message stated the audience was clinicians only, but subsequent messages expanded it to include researchers.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The beta launch audience.",
+              "confidence": 0.9,
+              "rationale": "The initial message stated the audience was clinicians only, but subsequent messages expanded it to include researchers."
+            },
+            "model_response": {
+              "id": "chatcmpl-0cd02e01-1a0b-4a5f-9db6-d92f9f9fce3e",
+              "created": 1778055786,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The beta launch audience.\",\n  \"confidence\": 0.9,\n  \"rationale\": \"The initial message stated the audience was clinicians only, but subsequent messages expanded it to include researchers.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 56,
+                "prompt_tokens": 183,
+                "total_tokens": 239,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 183,
+          "output_tokens": 56,
+          "total_tokens": 239,
+          "latency_seconds": 2.873333499999717
+        },
+        "metrics": {
+          "gold_answer": "launch audience",
+          "prediction": "The beta launch audience.",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "launch audience",
+          "confidence": 1.0,
+          "rationale": "Directly answers the question based on the provided stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"beta launch audience\",\"evidence_t\":[1,2,3],\"reason\":\"The launch brief lists the audience as clinicians and researchers, which differs from the initial Slack message and the PM email.\"}\n```",
+              "parsed_output": {
+                "answer": "beta launch audience",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The launch brief lists the audience as clinicians and researchers, which differs from the initial Slack message and the PM email."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"beta launch audience\",\"confidence\":1.0,\"rationale\":\"Directly answers the question based on the provided stream.\"}",
+              "parsed_output": {
+                "final_answer": "beta launch audience",
+                "confidence": 1.0,
+                "rationale": "Directly answers the question based on the provided stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "beta launch audience",
+              "output": "launch audience"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 613,
+          "output_tokens": 80,
+          "total_tokens": 693,
+          "latency_seconds": 2.7768920429998616
+        },
+        "metrics": {
+          "gold_answer": "launch audience",
+          "prediction": "launch audience",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_023",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #reading",
+            "text": "Omar will summarize the transformer survey."
+          },
+          {
+            "t": 2,
+            "source": "email",
+            "text": "Omar is switching to the clinical trial readings."
+          },
+          {
+            "t": 3,
+            "source": "Slack #reading",
+            "text": "Evelyn will summarize the transformer survey for journal club."
+          }
+        ],
+        "question": "Who is assigned to summarize the transformer survey?",
+        "gold_answer": "Evelyn"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Evelyn",
+          "confidence": 1.0,
+          "rationale": "The latest message [t=3] states Evelyn will summarize the transformer survey.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Evelyn\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The latest message [t=3] states Evelyn will summarize the transformer survey.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Evelyn",
+              "confidence": 1.0,
+              "rationale": "The latest message [t=3] states Evelyn will summarize the transformer survey."
+            },
+            "model_response": {
+              "id": "chatcmpl-e577532a-f36b-4757-8335-d2d5e963f70a",
+              "created": 1778055789,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Evelyn\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The latest message [t=3] states Evelyn will summarize the transformer survey.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 52,
+                "prompt_tokens": 184,
+                "total_tokens": 236,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 184,
+          "output_tokens": 52,
+          "total_tokens": 236,
+          "latency_seconds": 2.6315045830006056
+        },
+        "metrics": {
+          "gold_answer": "Evelyn",
+          "prediction": "Evelyn",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Omar",
+          "confidence": 1.0,
+          "rationale": "Direct answer to the question from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Omar\",\"evidence_t\":[1,3],\"reason\":\"Omar is assigned to summarize the transformer survey in both Slack messages.\"}\n```",
+              "parsed_output": {
+                "answer": "Omar",
+                "evidence_t": [
+                  1,
+                  3
+                ],
+                "reason": "Omar is assigned to summarize the transformer survey in both Slack messages."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Omar\",\"confidence\":1.0,\"rationale\":\"Direct answer to the question from the stream.\"}",
+              "parsed_output": {
+                "final_answer": "Omar",
+                "confidence": 1.0,
+                "rationale": "Direct answer to the question from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "Omar",
+              "output": "Omar"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 599,
+          "output_tokens": 62,
+          "total_tokens": 661,
+          "latency_seconds": 2.5156367499994303
+        },
+        "metrics": {
+          "gold_answer": "Evelyn",
+          "prediction": "Omar",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_024",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #paper",
+            "text": "The appendix cleanup is next after citations."
+          },
+          {
+            "t": 2,
+            "source": "publisher email",
+            "text": "The copyright form is missing and blocks publication."
+          },
+          {
+            "t": 3,
+            "source": "Slack #paper",
+            "text": "Stop appendix cleanup; copyright form is the blocker."
+          }
+        ],
+        "question": "What is the publication blocker?",
+        "gold_answer": "copyright form"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The copyright form.",
+          "confidence": 1.0,
+          "rationale": "The publisher email at t=2 states the copyright form is missing and blocks publication. This is confirmed by the Slack message at t=3.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The copyright form.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The publisher email at t=2 states the copyright form is missing and blocks publication. This is confirmed by the Slack message at t=3.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The copyright form.",
+              "confidence": 1.0,
+              "rationale": "The publisher email at t=2 states the copyright form is missing and blocks publication. This is confirmed by the Slack message at t=3."
+            },
+            "model_response": {
+              "id": "chatcmpl-abe66aa3-85fc-4721-beef-5b559d1ab8cd",
+              "created": 1778055792,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The copyright form.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The publisher email at t=2 states the copyright form is missing and blocks publication. This is confirmed by the Slack message at t=3.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 65,
+                "prompt_tokens": 183,
+                "total_tokens": 248,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 183,
+          "output_tokens": 65,
+          "total_tokens": 248,
+          "latency_seconds": 3.0980682499994145
+        },
+        "metrics": {
+          "gold_answer": "copyright form",
+          "prediction": "The copyright form.",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "copyright form",
+          "confidence": 1.0,
+          "rationale": "Directly stated as the blocker in the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"copyright form\",\"evidence_t\":[2,3],\"reason\":\"The stream explicitly states that the copyright form is the blocker.\"}\n```",
+              "parsed_output": {
+                "answer": "copyright form",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "The stream explicitly states that the copyright form is the blocker."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"copyright form\",\"confidence\":1.0,\"rationale\":\"Directly stated as the blocker in the stream.\"}",
+              "parsed_output": {
+                "final_answer": "copyright form",
+                "confidence": 1.0,
+                "rationale": "Directly stated as the blocker in the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "copyright form",
+              "output": "copyright form"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 598,
+          "output_tokens": 64,
+          "total_tokens": 662,
+          "latency_seconds": 2.5323501250004483
+        },
+        "metrics": {
+          "gold_answer": "copyright form",
+          "prediction": "copyright form",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_025",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "lab notebook",
+            "text": "Experiment B uses antibody lot L17."
+          },
+          {
+            "t": 2,
+            "source": "inventory Slack",
+            "text": "Lot L17 failed QC and should not be used."
+          },
+          {
+            "t": 3,
+            "source": "inventory email",
+            "text": "Replacement antibody lot L21 passed QC."
+          },
+          {
+            "t": 4,
+            "source": "lab notebook",
+            "text": "Experiment B protocol updated to antibody lot L21."
+          }
+        ],
+        "question": "Which antibody lot should Experiment B use?",
+        "gold_answer": "L21"
+      },
+      "baseline": {
+        "result": {
+          "answer": "L21",
+          "confidence": 1.0,
+          "rationale": "The lab notebook was updated to use antibody lot L21 after L17 failed QC and was replaced.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"L21\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The lab notebook was updated to use antibody lot L21 after L17 failed QC and was replaced.\"\n}\n```",
+            "parsed_output": {
+              "answer": "L21",
+              "confidence": 1.0,
+              "rationale": "The lab notebook was updated to use antibody lot L21 after L17 failed QC and was replaced."
+            },
+            "model_response": {
+              "id": "chatcmpl-ead785d3-ea04-4af1-a5ca-37f3abb68490",
+              "created": 1778055795,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"L21\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The lab notebook was updated to use antibody lot L21 after L17 failed QC and was replaced.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 58,
+                "prompt_tokens": 206,
+                "total_tokens": 264,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 206,
+          "output_tokens": 58,
+          "total_tokens": 264,
+          "latency_seconds": 2.9646414169992568
+        },
+        "metrics": {
+          "gold_answer": "L21",
+          "prediction": "L21",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "L21",
+          "confidence": null,
+          "rationale": "Experiment B protocol was updated to use lot L21.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"L21\",\"evidence_t\":[2,3,4],\"reason\":\"Experiment B protocol was updated to use lot L21.\"}\n```",
+              "parsed_output": {
+                "answer": "L21",
+                "evidence_t": [
+                  2,
+                  3,
+                  4
+                ],
+                "reason": "Experiment B protocol was updated to use lot L21."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"L21\",\"evidence_t\":[2,3,4],\"reason\":\"protocol updated to use L21\"}",
+              "parsed_output": {
+                "final_answer": "L21",
+                "evidence_t": [
+                  2,
+                  3,
+                  4
+                ],
+                "reason": "protocol updated to use L21"
+              }
+            },
+            "canonicalizer": {
+              "input": "L21",
+              "output": "L21"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 648,
+          "output_tokens": 68,
+          "total_tokens": 716,
+          "latency_seconds": 2.6821480410008007
+        },
+        "metrics": {
+          "gold_answer": "L21",
+          "prediction": "L21",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_026",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #conf",
+            "text": "The workshop talk is assigned to room East Hall."
+          },
+          {
+            "t": 2,
+            "source": "organizer email",
+            "text": "East Hall is reserved for posters; talks move to North Hall."
+          },
+          {
+            "t": 3,
+            "source": "schedule update",
+            "text": "Workshop talk room: North Hall."
+          }
+        ],
+        "question": "Where is the workshop talk currently located?",
+        "gold_answer": "North Hall"
+      },
+      "baseline": {
+        "result": {
+          "answer": "North Hall",
+          "confidence": 1.0,
+          "rationale": "The schedule update at t=3 confirms the workshop talk is in North Hall, superseding the initial assignment to East Hall at t=1.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"North Hall\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The schedule update at t=3 confirms the workshop talk is in North Hall, superseding the initial assignment to East Hall at t=1.\"\n}\n```",
+            "parsed_output": {
+              "answer": "North Hall",
+              "confidence": 1.0,
+              "rationale": "The schedule update at t=3 confirms the workshop talk is in North Hall, superseding the initial assignment to East Hall at t=1."
+            },
+            "model_response": {
+              "id": "chatcmpl-b247fc58-3d5b-4263-8af7-ea06c2ef931c",
+              "created": 1778055798,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"North Hall\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The schedule update at t=3 confirms the workshop talk is in North Hall, superseding the initial assignment to East Hall at t=1.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 64,
+                "prompt_tokens": 187,
+                "total_tokens": 251,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 187,
+          "output_tokens": 64,
+          "total_tokens": 251,
+          "latency_seconds": 3.194517416999588
+        },
+        "metrics": {
+          "gold_answer": "North Hall",
+          "prediction": "North Hall",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "North Hall",
+          "confidence": 1.0,
+          "rationale": "Schedule update confirms location.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"North Hall\",\"evidence_t\":[2,3],\"reason\":\"The schedule update indicates the workshop talk is now in North Hall.\"}\n```",
+              "parsed_output": {
+                "answer": "North Hall",
+                "evidence_t": [
+                  2,
+                  3
+                ],
+                "reason": "The schedule update indicates the workshop talk is now in North Hall."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"North Hall\",\"confidence\":1.0,\"rationale\":\"Schedule update confirms location.\"}",
+              "parsed_output": {
+                "final_answer": "North Hall",
+                "confidence": 1.0,
+                "rationale": "Schedule update confirms location."
+              }
+            },
+            "canonicalizer": {
+              "input": "North Hall",
+              "output": "North Hall"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 607,
+          "output_tokens": 60,
+          "total_tokens": 667,
+          "latency_seconds": 2.511982459000137
+        },
+        "metrics": {
+          "gold_answer": "North Hall",
+          "prediction": "North Hall",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_027",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "memo",
+            "text": "The compute estimate assumes 2 million tokens per run."
+          },
+          {
+            "t": 2,
+            "source": "Slack #budget",
+            "text": "Correction from logs: each run uses about 5 million tokens."
+          },
+          {
+            "t": 3,
+            "source": "memo update",
+            "text": "Compute estimate updated to 5 million tokens per run."
+          }
+        ],
+        "question": "Which estimate was corrected?",
+        "gold_answer": "token count"
+      },
+      "baseline": {
+        "result": {
+          "answer": "2 million tokens per run",
+          "confidence": 1.0,
+          "rationale": "The Slack message at t=2 corrected the initial estimate of 2 million tokens, and the memo at t=3 confirmed the update to 5 million tokens.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"2 million tokens per run\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The Slack message at t=2 corrected the initial estimate of 2 million tokens, and the memo at t=3 confirmed the update to 5 million tokens.\"\n}\n```",
+            "parsed_output": {
+              "answer": "2 million tokens per run",
+              "confidence": 1.0,
+              "rationale": "The Slack message at t=2 corrected the initial estimate of 2 million tokens, and the memo at t=3 confirmed the update to 5 million tokens."
+            },
+            "model_response": {
+              "id": "chatcmpl-d5d9fe54-1f84-4aa9-9f82-94c86941b6d1",
+              "created": 1778055801,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"2 million tokens per run\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The Slack message at t=2 corrected the initial estimate of 2 million tokens, and the memo at t=3 confirmed the update to 5 million tokens.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 71,
+                "prompt_tokens": 188,
+                "total_tokens": 259,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 188,
+          "output_tokens": 71,
+          "total_tokens": 259,
+          "latency_seconds": 3.4600598750002973
+        },
+        "metrics": {
+          "gold_answer": "token count",
+          "prediction": "2 million tokens per run",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "token count",
+          "confidence": 1.0,
+          "rationale": "Directly answers the question based on the provided stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"compute estimate\",\"evidence_t\":[1,2,3],\"reason\":\"The Slack message corrects the 2 million tokens estimate to 5 million tokens.\"}\n```",
+              "parsed_output": {
+                "answer": "compute estimate",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The Slack message corrects the 2 million tokens estimate to 5 million tokens."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"compute estimate\",\"confidence\":1.0,\"rationale\":\"Directly answers the question based on the provided stream.\"}",
+              "parsed_output": {
+                "final_answer": "compute estimate",
+                "confidence": 1.0,
+                "rationale": "Directly answers the question based on the provided stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "compute estimate",
+              "output": "token count"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 614,
+          "output_tokens": 71,
+          "total_tokens": 685,
+          "latency_seconds": 2.610720417000266
+        },
+        "metrics": {
+          "gold_answer": "token count",
+          "prediction": "token count",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_028",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #clinical",
+            "text": "Dr. Alvarez will contact the hospital partner."
+          },
+          {
+            "t": 2,
+            "source": "email",
+            "text": "Dr. Alvarez is unavailable until next month."
+          },
+          {
+            "t": 3,
+            "source": "Slack #clinical",
+            "text": "Dr. Shah agreed to contact the hospital partner this week."
+          }
+        ],
+        "question": "Who will contact the hospital partner?",
+        "gold_answer": "Dr. Shah"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Dr. Shah",
+          "confidence": 0.9,
+          "rationale": "Dr. Alvarez was initially assigned, but is unavailable. Dr. Shah has now agreed to contact the partner.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Dr. Shah\",\n  \"confidence\": 0.9,\n  \"rationale\": \"Dr. Alvarez was initially assigned, but is unavailable. Dr. Shah has now agreed to contact the partner.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Dr. Shah",
+              "confidence": 0.9,
+              "rationale": "Dr. Alvarez was initially assigned, but is unavailable. Dr. Shah has now agreed to contact the partner."
+            },
+            "model_response": {
+              "id": "chatcmpl-1b9d50bd-97a7-47e6-966a-2ee245a8073b",
+              "created": 1778055804,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Dr. Shah\",\n  \"confidence\": 0.9,\n  \"rationale\": \"Dr. Alvarez was initially assigned, but is unavailable. Dr. Shah has now agreed to contact the partner.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 58,
+                "prompt_tokens": 186,
+                "total_tokens": 244,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 186,
+          "output_tokens": 58,
+          "total_tokens": 244,
+          "latency_seconds": 2.9615532080006233
+        },
+        "metrics": {
+          "gold_answer": "Dr. Shah",
+          "prediction": "Dr. Shah",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Dr. Alvarez",
+          "confidence": null,
+          "rationale": "Dr. Alvarez is the one who will contact the hospital partner according to the Slack message.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Dr. Alvarez\",\"evidence_t\":[1,2],\"reason\":\"Dr. Alvarez is the one who will contact the hospital partner according to the Slack message.\"}\n```",
+              "parsed_output": {
+                "answer": "Dr. Alvarez",
+                "evidence_t": [
+                  1,
+                  2
+                ],
+                "reason": "Dr. Alvarez is the one who will contact the hospital partner according to the Slack message."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Dr. Alvarez\",\"evidence_t\":[1,2],\"reason\":\"Dr. Alvarez will contact hospital partner.\"}",
+              "parsed_output": {
+                "final_answer": "Dr. Alvarez",
+                "evidence_t": [
+                  1,
+                  2
+                ],
+                "reason": "Dr. Alvarez will contact hospital partner."
+              }
+            },
+            "canonicalizer": {
+              "input": "Dr. Alvarez",
+              "output": "Dr. Alvarez"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 612,
+          "output_tokens": 71,
+          "total_tokens": 683,
+          "latency_seconds": 2.6383017090001886
+        },
+        "metrics": {
+          "gold_answer": "Dr. Shah",
+          "prediction": "Dr. Alvarez",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_029",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #slm",
+            "text": "Candidate tasks: article stream QA, Slack stream QA, and email triage."
+          },
+          {
+            "t": 2,
+            "source": "advisor note",
+            "text": "Start with email triage because it has the clearest gold labels."
+          },
+          {
+            "t": 3,
+            "source": "planning doc",
+            "text": "First synthetic stream scenario priority: email triage."
+          }
+        ],
+        "question": "Which synthetic scenario should be prioritized first?",
+        "gold_answer": "email triage"
+      },
+      "baseline": {
+        "result": {
+          "answer": "email triage",
+          "confidence": 1.0,
+          "rationale": "The planning doc explicitly states email triage has the highest priority.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"email triage\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The planning doc explicitly states email triage has the highest priority.\"\n}\n```",
+            "parsed_output": {
+              "answer": "email triage",
+              "confidence": 1.0,
+              "rationale": "The planning doc explicitly states email triage has the highest priority."
+            },
+            "model_response": {
+              "id": "chatcmpl-1810ac21-db09-49ac-a02f-7a926ba1b622",
+              "created": 1778055807,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"email triage\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The planning doc explicitly states email triage has the highest priority.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 47,
+                "prompt_tokens": 194,
+                "total_tokens": 241,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 194,
+          "output_tokens": 47,
+          "total_tokens": 241,
+          "latency_seconds": 2.548598375000438
+        },
+        "metrics": {
+          "gold_answer": "email triage",
+          "prediction": "email triage",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "email triage",
+          "confidence": 1.0,
+          "rationale": "Directly stated as the first priority in the planning document.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "{\"answer\":\"email triage\",\"evidence_t\":[1,2,3],\"reason\":\"The planning doc explicitly states email triage as the first synthetic stream scenario priority.\"}",
+              "parsed_output": {
+                "answer": "email triage",
+                "evidence_t": [
+                  1,
+                  2,
+                  3
+                ],
+                "reason": "The planning doc explicitly states email triage as the first synthetic stream scenario priority."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"email triage\",\"confidence\":1.0,\"rationale\":\"Directly stated as the first priority in the planning document.\"}",
+              "parsed_output": {
+                "final_answer": "email triage",
+                "confidence": 1.0,
+                "rationale": "Directly stated as the first priority in the planning document."
+              }
+            },
+            "canonicalizer": {
+              "input": "email triage",
+              "output": "email triage"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 625,
+          "output_tokens": 66,
+          "total_tokens": 691,
+          "latency_seconds": 2.558715166998809
+        },
+        "metrics": {
+          "gold_answer": "email triage",
+          "prediction": "email triage",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_030",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "email",
+            "text": "Project Orion's demo depends on the API sandbox."
+          },
+          {
+            "t": 2,
+            "source": "Slack #orion",
+            "text": "The API sandbox will be ready after security approval."
+          },
+          {
+            "t": 3,
+            "source": "security email",
+            "text": "Security approval for the API sandbox was granted Wednesday."
+          },
+          {
+            "t": 4,
+            "source": "Slack #orion",
+            "text": "With approval granted, Project Orion's demo can proceed Wednesday afternoon."
+          }
+        ],
+        "question": "When can Project Orion's demo proceed?",
+        "gold_answer": "Wednesday afternoon"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Wednesday afternoon",
+          "confidence": 1.0,
+          "rationale": "The demo can proceed Wednesday afternoon, according to the Slack message after security approval was granted.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Wednesday afternoon\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The demo can proceed Wednesday afternoon, according to the Slack message after security approval was granted.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Wednesday afternoon",
+              "confidence": 1.0,
+              "rationale": "The demo can proceed Wednesday afternoon, according to the Slack message after security approval was granted."
+            },
+            "model_response": {
+              "id": "chatcmpl-d301c4b7-da2e-45cf-9a23-3ed5bf512800",
+              "created": 1778055810,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Wednesday afternoon\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The demo can proceed Wednesday afternoon, according to the Slack message after security approval was granted.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 53,
+                "prompt_tokens": 214,
+                "total_tokens": 267,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 214,
+          "output_tokens": 53,
+          "total_tokens": 267,
+          "latency_seconds": 2.7860733749994324
+        },
+        "metrics": {
+          "gold_answer": "Wednesday afternoon",
+          "prediction": "Wednesday afternoon",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Wednesday afternoon",
+          "confidence": 1.0,
+          "rationale": "Direct answer from the stream.",
+          "raw": {
+            "architecture": "adaptive",
+            "draft": {
+              "raw_output": "```json\n{\"answer\":\"Wednesday afternoon\",\"evidence_t\":[1,2,3,4],\"reason\":\"The stream indicates that with security approval granted on Wednesday, the demo can proceed Wednesday afternoon.\"}\n```",
+              "parsed_output": {
+                "answer": "Wednesday afternoon",
+                "evidence_t": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "reason": "The stream indicates that with security approval granted on Wednesday, the demo can proceed Wednesday afternoon."
+              }
+            },
+            "verification": {
+              "raw_output": "{\"final_answer\":\"Wednesday afternoon\",\"confidence\":1.0,\"rationale\":\"Direct answer from the stream.\"}",
+              "parsed_output": {
+                "final_answer": "Wednesday afternoon",
+                "confidence": 1.0,
+                "rationale": "Direct answer from the stream."
+              }
+            },
+            "canonicalizer": {
+              "input": "Wednesday afternoon",
+              "output": "Wednesday afternoon"
+            }
+          },
+          "model_calls": 2,
+          "input_tokens": 670,
+          "output_tokens": 70,
+          "total_tokens": 740,
+          "latency_seconds": 2.678728249999949
+        },
+        "metrics": {
+          "gold_answer": "Wednesday afternoon",
+          "prediction": "Wednesday afternoon",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    }
+  ],
+  "todos": [
+    "Add a GAIA Level 1 loader that emits the same StreamTask-like interface or a compatible benchmark task schema.",
+    "Add tool-use and browsing adapters for GAIA without changing the baseline/swarm result and evaluator contract."
+  ]
+}

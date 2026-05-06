@@ -15,7 +15,9 @@ The first benchmark is synthetic and controlled: each task is a stream of messag
 
 The baseline sends the full stream and question to one model.
 
-The swarm uses the same small model in five roles:
+There are two swarm architectures.
+
+Pipeline swarm (`--swarm-architecture pipeline`) uses the same small model in five roles:
 
 - FactExtractorAgent
 - StateTrackerAgent
@@ -28,6 +30,14 @@ You can also run a compact 3-agent swarm with `--swarm-agents 3`:
 - FactExtractorAgent
 - StateAndContradictionAgent
 - AnswerAndVerifierAgent
+
+Adaptive swarm (`--swarm-architecture adaptive`) uses:
+
+- TaskSpecialistAgent
+- StrictVerifierAndNormalizerAgent
+- a deterministic short-answer canonicalizer
+
+The adaptive swarm is the strongest current architecture on the synthetic benchmark. It uses task type metadata, small-model reasoning, and a symbolic final formatting layer. It does not use the gold answer.
 
 Results are scored against the task's gold answer and saved to `results/run_TIMESTAMP.json` by default. Use `--run-name` to create readable filenames such as `results/20260505_235000_sanity_1task.json`.
 
@@ -63,7 +73,7 @@ LARGE_MODEL=ollama/gemma3:12b
 Run:
 
 ```bash
-python -m src.run_experiment --mode both --limit 5
+python -m src.run_experiment --mode both --limit 5 --swarm-architecture adaptive
 ```
 
 Equivalent explicit command:
@@ -72,7 +82,10 @@ Equivalent explicit command:
 python -m src.run_experiment \
   --mode both \
   --limit 5 \
-  --run-name ollama_gemma_4b_vs_12b_5tasks \
+  --run-name adaptive_gemma4b_vs_gemma12b_5tasks \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --swarm-architecture adaptive \
   --small-model ollama/gemma3:4b \
   --large-model ollama/gemma3:12b
 ```
@@ -211,6 +224,12 @@ Run only the small swarm:
 python -m src.run_experiment --mode swarm --limit 5 --run-name swarm_5tasks
 ```
 
+Run only the adaptive swarm:
+
+```bash
+python -m src.run_experiment --mode swarm --limit 5 --swarm-architecture adaptive --run-name adaptive_swarm_5tasks
+```
+
 Run only the compact 3-agent swarm:
 
 ```bash
@@ -220,7 +239,7 @@ python -m src.run_experiment --mode swarm --limit 5 --swarm-agents 3 --run-name 
 Run both methods:
 
 ```bash
-python -m src.run_experiment --mode both --limit 5 --run-name both_5tasks
+python -m src.run_experiment --mode both --limit 5 --swarm-architecture adaptive --run-name both_adaptive_5tasks
 ```
 
 Suggested first experiment for 24GB Macs:
@@ -229,7 +248,10 @@ Suggested first experiment for 24GB Macs:
 python -m src.run_experiment \
   --mode both \
   --limit 1 \
-  --run-name sanity_gemma_4b_swarm_vs_12b_1task \
+  --run-name sanity_adaptive_gemma4b_swarm_vs_gemma12b_1task \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --swarm-architecture adaptive \
   --small-model ollama/gemma3:4b \
   --large-model ollama/gemma3:12b
 ```
@@ -239,9 +261,25 @@ Full synthetic run:
 ```bash
 python -m src.run_experiment \
   --mode both \
-  --run-name full_gemma_4b_swarm_vs_12b_30tasks \
+  --run-name final_adaptive_gemma4b_swarm_vs_gemma12b_30tasks \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --swarm-architecture adaptive \
   --small-model ollama/gemma3:4b \
   --large-model ollama/gemma3:12b
+```
+
+Latest local result on the 30-task synthetic benchmark:
+
+```text
+Gemma 12B baseline:        avg_score 0.808, exact 19/30, avg_latency 3.233s, tokens 7,784
+Adaptive Gemma 4B swarm:   avg_score 1.000, exact 30/30, avg_latency 2.942s, tokens 26,393
+```
+
+Saved result:
+
+```text
+results/20260506_013155_final_adaptive_v3_gemma4b_swarm_vs_gemma12b_30tasks.json
 ```
 
 Only try `gemma3:27b` after closing memory-heavy apps, starting with `--limit 1`, and watching Activity Monitor memory pressure.

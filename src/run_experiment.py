@@ -183,6 +183,12 @@ def parse_args() -> argparse.Namespace:
         default=5,
         help="Use the full 5-agent swarm or a compact 3-agent swarm.",
     )
+    parser.add_argument(
+        "--swarm-architecture",
+        choices=["pipeline", "adaptive"],
+        default="pipeline",
+        help="Use the original pipeline swarm or the task-adaptive specialist swarm.",
+    )
     return parser.parse_args()
 
 
@@ -194,7 +200,10 @@ def main() -> None:
     if args.mode in ("baseline", "both"):
         from src.baseline_large import run_large_baseline
     if args.mode in ("swarm", "both"):
-        from src.swarm_small import run_small_swarm
+        if args.swarm_architecture == "adaptive":
+            from src.swarm_adaptive import run_adaptive_swarm
+        else:
+            from src.swarm_small import run_small_swarm
 
     output = args.output or _default_output_path(args.run_name)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
@@ -213,6 +222,17 @@ def main() -> None:
         )
 
     def run_swarm(record: dict[str, Any], task: StreamTask) -> None:
+        if args.swarm_architecture == "adaptive":
+            record["swarm"] = _run_method_safely(
+                lambda t: run_adaptive_swarm(
+                    t,
+                    small_model=args.small_model,
+                    temperature=args.temperature,
+                ),
+                task,
+            )
+            return
+
         record["swarm"] = _run_method_safely(
             lambda t: run_small_swarm(
                 t,
@@ -258,8 +278,17 @@ def main() -> None:
             if args.mode in ("swarm", "both"):
                 run_swarm(record, task)
 
-            if args.stop_ollama_between_methods and args.mode in ("swarm", "both"):
+            if (
+                args.mode == "both"
+                and args.stop_ollama_between_methods
+                and args.execution_order == "task"
+            ):
                 _stop_ollama_model(args.small_model)
+
+        if args.stop_ollama_between_methods and args.mode == "baseline":
+            _stop_ollama_model(args.large_model)
+        if args.stop_ollama_between_methods and args.mode == "swarm":
+            _stop_ollama_model(args.small_model)
 
     summary = summarize_results(records)
     payload = {
@@ -274,6 +303,7 @@ def main() -> None:
             "execution_order": args.execution_order,
             "stop_ollama_between_methods": args.stop_ollama_between_methods,
             "swarm_agents": args.swarm_agents,
+            "swarm_architecture": args.swarm_architecture,
         },
         "summary": summary,
         "records": records,
