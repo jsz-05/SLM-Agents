@@ -12,11 +12,12 @@ from tqdm import tqdm
 
 from src.dataset import load_stream_tasks
 from src.evaluator import evaluate_task_result, summarize_results
+from src.model_names import normalize_model_name
 from src.schemas import MethodResult, StreamTask
 
 
-DEFAULT_SMALL_MODEL = "openrouter/google/gemma-3-4b-it:free"
-DEFAULT_LARGE_MODEL = "openrouter/google/gemma-4-31b-it:free"
+DEFAULT_SMALL_MODEL = "ollama/gemma3:4b"
+DEFAULT_LARGE_MODEL = "ollama/gemma3:12b"
 
 
 def _model_to_dict(obj: Any) -> Any:
@@ -80,6 +81,27 @@ def _print_summary(summary: dict[str, Any], output: str) -> None:
     print(f"\nSaved: {output}")
 
 
+def _print_errors(records: list[dict[str, Any]]) -> None:
+    errors: list[tuple[str, str, str]] = []
+    for record in records:
+        task_id = record.get("task", {}).get("id", "unknown")
+        for method in ("baseline", "swarm"):
+            method_record = record.get(method)
+            if isinstance(method_record, dict) and "error" in method_record:
+                message = method_record["error"].get("message", "")
+                errors.append((task_id, method, message))
+
+    if not errors:
+        return
+
+    print("\nErrors")
+    print("======")
+    for task_id, method, message in errors[:3]:
+        print(f"{task_id} / {method}: {message}")
+    if len(errors) > 3:
+        print(f"... plus {len(errors) - 3} more error(s). See the saved JSON for details.")
+
+
 def _fmt(value: Any) -> str:
     if value is None:
         return "n/a"
@@ -98,11 +120,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mode", choices=["baseline", "swarm", "both"], default="both")
     parser.add_argument(
         "--large-model",
-        default=os.getenv("LARGE_MODEL", DEFAULT_LARGE_MODEL),
+        default=normalize_model_name(os.getenv("LARGE_MODEL", DEFAULT_LARGE_MODEL)),
     )
     parser.add_argument(
         "--small-model",
-        default=os.getenv("SMALL_MODEL", DEFAULT_SMALL_MODEL),
+        default=normalize_model_name(os.getenv("SMALL_MODEL", DEFAULT_SMALL_MODEL)),
     )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--output", default=None)
@@ -111,6 +133,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    args.large_model = normalize_model_name(args.large_model)
+    args.small_model = normalize_model_name(args.small_model)
+
     if args.mode in ("baseline", "both"):
         from src.baseline_large import run_large_baseline
     if args.mode in ("swarm", "both"):
@@ -169,6 +194,7 @@ def main() -> None:
         json.dump(payload, f, indent=2, ensure_ascii=True, default=_json_default)
 
     _print_summary(summary, output)
+    _print_errors(records)
 
 
 if __name__ == "__main__":

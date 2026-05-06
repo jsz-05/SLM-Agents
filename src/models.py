@@ -7,6 +7,7 @@ from typing import Any
 from dotenv import load_dotenv
 from litellm import completion
 
+from src.model_names import normalize_model_name
 from src.schemas import ModelCallResult
 
 
@@ -67,6 +68,7 @@ def call_model(
     messages: list[dict],
     temperature: float = 0.0,
 ) -> ModelCallResult:
+    model = normalize_model_name(model)
     start = time.perf_counter()
     try:
         response = completion(

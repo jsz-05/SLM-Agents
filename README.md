@@ -2,37 +2,28 @@
 
 ## Research Question
 
-Can a heterogeneous network of SLM agents match or outperform a single large LLM on stream reasoning tasks?
+Can a heterogeneous network of small LLM agents match or outperform a single larger LLM on stream reasoning tasks?
 
-This prototype is for Jeffrey Zhou's research direction with Professor K. Mani Chandy: comparing a monolithic large-model agent against an adaptive network of smaller role-specialized agents.
+This prototype compares:
 
-## Simplified Comparison
+- Baseline A: one larger LLM acting as a monolithic agent.
+- Method D: a heterogeneous network of smaller role-specialized agents.
 
-Baseline A = single large LLM.
+The first benchmark is synthetic and controlled: each task is a stream of messages where later messages may update, correct, or contradict earlier ones. The model must answer a final question about the current state, contradiction, priority, entity assignment, or multi-hop dependency.
 
-Method D = heterogeneous SLM agent network.
+## What Runs
 
-The prototype intentionally skips the single-small-model baseline, homogeneous swarm, and budget optimization for now. The first question is whether the small-agent network can recover comparable accuracy on persistent information streams.
+The baseline sends the full stream and question to one model.
 
-## Why Synthetic Streams
+The swarm uses the same small model in five roles:
 
-Synthetic streams give controlled gold answers while matching the shape of realistic persistent streams: email threads, Slack channels, article updates, lab memos, paper logistics, conference planning, and experiment status messages.
+- FactExtractorAgent
+- StateTrackerAgent
+- ContradictionDetectorAgent
+- AnswerAgent
+- VerifierAgent
 
-Each task contains 3-7 timestamped messages. Later messages may update, correct, or contradict earlier messages. The model must answer a final question about the latest state, a contradiction, an assignment, a priority, or a multi-hop dependency.
-
-## Benchmark Plan
-
-Current: `data/synthetic_streams.jsonl`.
-
-Next: GAIA Level 1 validation subset.
-
-GAIA is a benchmark for general AI assistants with reasoning, tool use, browsing, and short unambiguous answers. The pipeline is organized so a future GAIA loader can be added without rewriting the model runners, result schema, or summary code.
-
-TODOs for GAIA:
-
-- Add a GAIA Level 1 loader that emits a compatible benchmark task object.
-- Add tool-use and browsing adapters where GAIA requires them.
-- Keep the same `MethodResult` contract so baseline and swarm methods remain comparable.
+Results are scored against the task's gold answer and saved to `results/run_TIMESTAMP.json`.
 
 ## Setup
 
@@ -43,36 +34,106 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Fill `OPENROUTER_API_KEY` in `.env`.
+Then choose one of the two model options below.
 
-## OpenRouter Notes
+## Option 1: Ollama
 
-You need an OpenRouter account and API key.
+This is the recommended local path. It is free, private, and does not need an API key.
 
-Free models may have rate limits. Paid models require credits.
-
-Model names can be configured through `.env` or CLI flags:
+Install/open Ollama, then pull models:
 
 ```bash
-SMALL_MODEL=openrouter/google/gemma-3-4b-it:free
-LARGE_MODEL=openrouter/google/gemma-4-31b-it:free
+ollama pull gemma3:4b
+ollama pull gemma3:12b
 ```
 
-## Run
+Use this `.env`:
+
+```env
+SMALL_MODEL=ollama/gemma3:4b
+LARGE_MODEL=ollama/gemma3:12b
+```
+
+Run:
 
 ```bash
 python -m src.run_experiment --mode both --limit 5
 ```
 
-Other useful runs:
+Equivalent explicit command:
 
 ```bash
-python -m src.run_experiment --mode baseline
-python -m src.run_experiment --mode swarm
-python -m src.run_experiment --mode both --limit 10 --small-model openrouter/google/gemma-3-4b-it:free --large-model openrouter/google/gemma-4-31b-it:free
+python -m src.run_experiment \
+  --mode both \
+  --limit 5 \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:12b
 ```
 
-Results are saved to `results/run_TIMESTAMP.json` by default.
+Other local pairs you can try:
+
+```bash
+python -m src.run_experiment --mode both --limit 5 --small-model ollama/qwen3:8b --large-model ollama/qwen3:14b
+python -m src.run_experiment --mode both --limit 5 --small-model ollama/gemma3:4b --large-model ollama/gemma3:27b
+```
+
+## Option 2: OpenRouter
+
+OpenRouter gives one API for many hosted models. It is convenient, but free models can be rate-limited or temporarily unavailable. Paid models are usually more reliable and require OpenRouter credits.
+
+Use this `.env`:
+
+```env
+OPENROUTER_API_KEY=your_openrouter_key_here
+SMALL_MODEL=openrouter/qwen/qwen3-4b:free
+LARGE_MODEL=openrouter/google/gemma-4-31b-it:free
+```
+
+Free OpenRouter run:
+
+```bash
+python -m src.run_experiment --mode both --limit 1
+```
+
+For more reliable experiments, choose paid model IDs from OpenRouter and set them in `.env` or pass them as CLI flags:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 5 \
+  --small-model openrouter/some-small-model \
+  --large-model openrouter/some-large-model
+```
+
+## Data
+
+The current benchmark is:
+
+```text
+data/synthetic_streams.jsonl
+```
+
+Each line is one task with:
+
+- `stream`: 3-7 timestamped messages.
+- `question`: the final question to answer.
+- `gold_answer`: the short answer used for scoring.
+
+Example task shape:
+
+```json
+{
+  "id": "syn_001",
+  "task_type": "state_tracking",
+  "stream": [
+    {"t": 1, "source": "lab email", "text": "The meeting is Friday."},
+    {"t": 2, "source": "Slack", "text": "Friday no longer works."},
+    {"t": 3, "source": "calendar", "text": "The meeting moved to Monday."}
+  ],
+  "question": "What day is the meeting now?",
+  "gold_answer": "Monday"
+}
+```
 
 ## Metrics
 
@@ -81,31 +142,57 @@ The evaluator reports:
 - exact match
 - contains gold
 - score
-- token usage
+- token usage when available
 - latency
 - number of model calls
 
-Scoring is intentionally simple:
+Scoring:
 
-- `1.0` for normalized exact match
-- `0.75` if the normalized gold answer appears inside the normalized prediction
-- `0.0` otherwise
+- `1.0` for normalized exact match.
+- `0.75` if the normalized gold answer appears inside the normalized prediction.
+- `0.0` otherwise.
 
-Token counts are collected from LiteLLM usage fields when available. If the provider response does not include token usage, token fields are saved as `null` and the run continues.
+Token counts come from LiteLLM/provider usage fields when available. If a provider does not return token usage, token fields are saved as `null`.
+
+## Useful Commands
+
+Run only the large baseline:
+
+```bash
+python -m src.run_experiment --mode baseline --limit 5
+```
+
+Run only the small swarm:
+
+```bash
+python -m src.run_experiment --mode swarm --limit 5
+```
+
+Run both methods:
+
+```bash
+python -m src.run_experiment --mode both --limit 5
+```
+
+## Benchmark Plan
+
+Current:
+
+- Synthetic persistent-stream benchmark with gold answers.
+
+Next:
+
+- Add GAIA Level 1 loader.
+- Add LLM-as-judge evaluation.
+- Add real streams such as email, Slack, articles, and lab updates.
+- Plug into Professor Chandy's distributed message-passing agent system.
+
+GAIA is not implemented yet. The current code includes a loader stub so a future public benchmark can be added without rewriting the experiment pipeline.
 
 ## Current Limitations
 
-- synthetic benchmark
+- synthetic benchmark only
 - simple automatic scoring
 - no live streams yet
-- no integration with Professor Chandy's message-passing system yet
-- one small model and one large model at a time
 - no budget optimization yet
-
-## Next Steps
-
-- plug into distributed message-passing agents
-- add GAIA loader
-- add LLM-as-judge evaluation
-- add real streams
-- compare more models later
+- no integration with Professor Chandy's message-passing system yet
