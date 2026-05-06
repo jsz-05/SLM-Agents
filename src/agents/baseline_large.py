@@ -1,3 +1,5 @@
+"""Baseline A: one large model answers the stream question in one call."""
+
 from __future__ import annotations
 
 import json
@@ -5,6 +7,7 @@ import re
 from typing import Any
 
 from src.models import call_model
+from src.postprocess import clean_answer
 from src.prompts import LARGE_BASELINE_PROMPT
 from src.schemas import MethodResult, StreamTask
 
@@ -58,7 +61,7 @@ def run_large_baseline(
     )
     parsed = _parse_json_loose(call.content)
 
-    answer = str(parsed.get("answer") or parsed.get("final_answer") or call.content).strip()
+    answer = clean_answer(str(parsed.get("answer") or parsed.get("final_answer") or call.content))
     rationale = parsed.get("rationale")
     if rationale is not None:
         rationale = str(rationale)

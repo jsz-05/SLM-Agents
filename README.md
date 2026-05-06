@@ -2,44 +2,26 @@
 
 ## Research Question
 
-Can a heterogeneous network of small LLM agents match or outperform a single larger LLM on stream reasoning tasks?
+Can a heterogeneous network of small LLM agents match or outperform a single larger LLM on persistent-stream reasoning tasks?
 
-This prototype compares:
+This prototype is for Jeffrey Zhou's research work with Professor K. Mani Chandy. It compares:
 
 - Baseline A: one larger LLM acting as a monolithic agent.
 - Method D: a heterogeneous network of smaller role-specialized agents.
 
-The first benchmark is synthetic and controlled: each task is a stream of messages where later messages may update, correct, or contradict earlier ones. The model must answer a final question about the current state, contradiction, priority, entity assignment, or multi-hop dependency.
+The goal is not to prove that a small swarm wins on a toy benchmark. The goal is to build a fair evaluation framework for studying when small-agent networks can match a larger model, measuring accuracy, latency, token usage, model calls, and failure modes.
 
-## What Runs
+## Fairness Note
 
-The baseline sends the full stream and question to one model.
+An earlier adaptive swarm used task-specific prompting and deterministic canonicalization tuned to this synthetic benchmark. That was useful for debugging, but it is not fair evidence against the large baseline because the same task-specific rules were not given to the baseline.
 
-There are two swarm architectures.
-
-Pipeline swarm (`--swarm-architecture pipeline`) uses the same small model in five roles:
-
-- FactExtractorAgent
-- StateTrackerAgent
-- ContradictionDetectorAgent
-- AnswerAgent
-- VerifierAgent
-
-You can also run a compact 3-agent swarm with `--swarm-agents 3`:
+The main comparison now uses the fair 3-agent pipeline:
 
 - FactExtractorAgent
 - StateAndContradictionAgent
 - AnswerAndVerifierAgent
 
-Adaptive swarm (`--swarm-architecture adaptive`) uses:
-
-- TaskSpecialistAgent
-- StrictVerifierAndNormalizerAgent
-- a deterministic short-answer canonicalizer
-
-The adaptive swarm is the strongest current architecture on the synthetic benchmark. It uses task type metadata, small-model reasoning, and a symbolic final formatting layer. It does not use the gold answer.
-
-Results are scored against the task's gold answer and saved to `results/run_TIMESTAMP.json` by default. Use `--run-name` to create readable filenames such as `results/20260505_235000_sanity_1task.json`.
+Both baseline and swarm receive the same shared answer-format contract. Generic answer cleanup and scoring are applied equally to both methods. The adaptive architecture still exists as an exploratory ablation only and prints a warning when used.
 
 ## Setup
 
@@ -50,13 +32,9 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Then choose one of the two model options below.
-
 ## Option 1: Ollama
 
-This is the recommended local path. It is free, private, and does not need an API key.
-
-Install/open Ollama, then pull models:
+Recommended for local experiments. It is free, private, and avoids hosted API rate limits.
 
 ```bash
 ollama pull gemma3:4b
@@ -70,71 +48,36 @@ SMALL_MODEL=ollama/gemma3:4b
 LARGE_MODEL=ollama/gemma3:12b
 ```
 
-Run:
-
-```bash
-python -m src.run_experiment --mode both --limit 5 --swarm-architecture adaptive
-```
-
-Equivalent explicit command:
+Default fair pilot:
 
 ```bash
 python -m src.run_experiment \
   --mode both \
   --limit 5 \
-  --run-name adaptive_gemma4b_vs_gemma12b_5tasks \
+  --run-name fair_pipeline_gemma4b_vs_gemma12b_5tasks \
   --execution-order method \
   --stop-ollama-between-methods \
-  --swarm-architecture adaptive \
   --small-model ollama/gemma3:4b \
   --large-model ollama/gemma3:12b
 ```
 
-Other local pairs you can try:
-
-```bash
-python -m src.run_experiment --mode both --limit 5 --run-name qwen_8b_vs_14b_5tasks --small-model ollama/qwen3:8b --large-model ollama/qwen3:14b
-```
-
-On a 24GB Mac, avoid `gemma3:27b` for routine runs. A safer comparison is either:
-
-- same family: `gemma3:4b` compact swarm vs `gemma3:12b` baseline
-- roughly 14B baseline: `gemma3:4b` compact swarm vs `qwen3:14b` baseline
-
-Safe 3-agent run against Qwen 14B:
+Full fair synthetic run:
 
 ```bash
 python -m src.run_experiment \
   --mode both \
-  --limit 1 \
-  --run-name sanity_gemma_4b_3agent_swarm_vs_qwen_14b_1task \
-  --execution-order method \
-  --stop-ollama-between-methods \
-  --swarm-agents 3 \
-  --small-model ollama/gemma3:4b \
-  --large-model ollama/qwen3:14b
-```
-
-`gemma3:27b` can exceed memory on 24GB machines, especially in `--mode both`. Prefer `gemma3:12b` or `qwen3:14b` for routine runs on a 24GB Mac.
-
-If you do test `gemma3:27b`, use method-ordered execution and explicitly unload Ollama between methods:
-
-```bash
-python -m src.run_experiment \
-  --mode both \
-  --limit 1 \
-  --run-name sanity_lowmem_gemma_4b_swarm_vs_27b_1task \
+  --run-name fair_pipeline_gemma4b_vs_gemma12b_30tasks \
   --execution-order method \
   --stop-ollama-between-methods \
   --small-model ollama/gemma3:4b \
-  --large-model ollama/gemma3:27b
+  --large-model ollama/gemma3:12b
 ```
 
-This runs the 27B baseline first, stops `gemma3:27b`, then runs the 4B swarm. It is slower but much safer on 24GB machines.
+On a 24GB Mac, avoid `gemma3:27b` for routine runs. Prefer `gemma3:12b` or another model that fits comfortably in memory.
 
 ## Option 2: OpenRouter
 
-OpenRouter gives one API for many hosted models. It is convenient, but free models can be rate-limited or temporarily unavailable. Paid models are usually more reliable and require OpenRouter credits.
+OpenRouter gives one API for many hosted models. Free models can be rate-limited or temporarily unavailable. Paid models are usually more reliable and require OpenRouter credits.
 
 Use this `.env`:
 
@@ -144,21 +87,10 @@ SMALL_MODEL=openrouter/qwen/qwen3-4b:free
 LARGE_MODEL=openrouter/google/gemma-4-31b-it:free
 ```
 
-Free OpenRouter run:
+Run:
 
 ```bash
 python -m src.run_experiment --mode both --limit 1 --run-name openrouter_free_1task
-```
-
-For more reliable experiments, choose paid model IDs from OpenRouter and set them in `.env` or pass them as CLI flags:
-
-```bash
-python -m src.run_experiment \
-  --mode both \
-  --limit 5 \
-  --run-name openrouter_paid_5tasks \
-  --small-model openrouter/some-small-model \
-  --large-model openrouter/some-large-model
 ```
 
 ## Data
@@ -173,44 +105,72 @@ Each line is one task with:
 
 - `stream`: 3-7 timestamped messages.
 - `question`: the final question to answer.
-- `gold_answer`: the short answer used for scoring.
+- `gold_answer`: the primary short answer.
+- `aliases`: optional acceptable short-answer variants.
 
-Example task shape:
-
-```json
-{
-  "id": "syn_001",
-  "task_type": "state_tracking",
-  "stream": [
-    {"t": 1, "source": "lab email", "text": "The meeting is Friday."},
-    {"t": 2, "source": "Slack", "text": "Friday no longer works."},
-    {"t": 3, "source": "calendar", "text": "The meeting moved to Monday."}
-  ],
-  "question": "What day is the meeting now?",
-  "gold_answer": "Monday"
-}
-```
+The tasks simulate persistent email, Slack, article, memo, conference, and lab-update streams where later messages may update or contradict earlier ones.
 
 ## Metrics
 
 The evaluator reports:
 
-- exact match
-- contains gold
-- score
+- exact match against gold or aliases
+- contains match in either direction
+- token F1
+- aggregate score
 - token usage when available
 - latency
 - number of model calls
 
 Scoring:
 
-- `1.0` for normalized exact match.
-- `0.75` if the normalized gold answer appears inside the normalized prediction.
+- `1.0` for normalized exact match against gold or aliases.
+- `0.8` if the gold/alias contains the prediction or the prediction contains the gold/alias.
+- `0.5` if token F1 is at least `0.5`.
 - `0.0` otherwise.
 
-Token counts come from LiteLLM/provider usage fields when available. If a provider does not return token usage, token fields are saved as `null`.
+Generic answer cleanup is applied equally to baseline and swarm. It only strips formatting noise such as whitespace, surrounding quotes/backticks, trailing periods, and leading `the`. It does not use task type, gold answer, or benchmark-specific mappings.
+
+## Outputs
+
+Each run writes:
+
+- JSON records: `results/run_TIMESTAMP.json` or `results/TIMESTAMP_RUNNAME.json`
+- Markdown summary: `results/TIMESTAMP_RUNNAME_summary.md`
+
+The Markdown report includes config, summary metrics, a per-task comparison table, and failure cases.
+
+## Code Layout
+
+- `src/run_experiment.py`: command-line runner; chooses baseline, swarm, model names, output paths, and execution order.
+- `src/agents/baseline_large.py`: Baseline A, one large model call over the full stream.
+- `src/agents/swarm_pipeline.py`: fair Method D default, a role-specialized small-model pipeline.
+- `src/agents/swarm_adaptive.py`: exploratory ablation with task-specific rules; not the main fair comparison.
+- `src/prompts.py`: shared answer-format contract plus role prompts.
+- `src/postprocess.py`: generic answer cleanup applied equally to both methods.
+- `src/evaluator.py`: shared scoring logic for baseline and swarm.
+- `src/report.py`: Markdown report generation.
+- `data/synthetic_streams.jsonl`: synthetic stream tasks with gold answers and optional aliases.
 
 ## Useful Commands
+
+Sanity run:
+
+```bash
+python -m src.run_experiment --mode both --limit 1
+```
+
+Fair 5-task pilot:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 5 \
+  --run-name fair_pipeline_gemma4b_vs_gemma12b_5tasks \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --swarm-agents 3
+```
 
 Run only the large baseline:
 
@@ -218,90 +178,33 @@ Run only the large baseline:
 python -m src.run_experiment --mode baseline --limit 5 --run-name baseline_5tasks
 ```
 
-Run only the small swarm:
+Run only the fair 3-agent swarm:
 
 ```bash
-python -m src.run_experiment --mode swarm --limit 5 --run-name swarm_5tasks
+python -m src.run_experiment --mode swarm --limit 5 --swarm-agents 3 --run-name fair_swarm_5tasks
 ```
 
-Run only the adaptive swarm:
+## Exploratory Ablations Only
 
-```bash
-python -m src.run_experiment --mode swarm --limit 5 --swarm-architecture adaptive --run-name adaptive_swarm_5tasks
-```
-
-Run only the compact 3-agent swarm:
-
-```bash
-python -m src.run_experiment --mode swarm --limit 5 --swarm-agents 3 --run-name compact_swarm_3agents_5tasks
-```
-
-Run both methods:
-
-```bash
-python -m src.run_experiment --mode both --limit 5 --swarm-architecture adaptive --run-name both_adaptive_5tasks
-```
-
-Suggested first experiment for 24GB Macs:
+The adaptive architecture is available for debugging and ablation studies:
 
 ```bash
 python -m src.run_experiment \
   --mode both \
-  --limit 1 \
-  --run-name sanity_adaptive_gemma4b_swarm_vs_gemma12b_1task \
+  --limit 5 \
+  --run-name ablation_adaptive_gemma4b_vs_gemma12b_5tasks \
   --execution-order method \
   --stop-ollama-between-methods \
-  --swarm-architecture adaptive \
-  --small-model ollama/gemma3:4b \
-  --large-model ollama/gemma3:12b
+  --swarm-architecture adaptive
 ```
 
-Full synthetic run:
-
-```bash
-python -m src.run_experiment \
-  --mode both \
-  --run-name final_adaptive_gemma4b_swarm_vs_gemma12b_30tasks \
-  --execution-order method \
-  --stop-ollama-between-methods \
-  --swarm-architecture adaptive \
-  --small-model ollama/gemma3:4b \
-  --large-model ollama/gemma3:12b
-```
-
-Latest local result on the 30-task synthetic benchmark:
-
-```text
-Gemma 12B baseline:        avg_score 0.808, exact 19/30, avg_latency 3.233s, tokens 7,784
-Adaptive Gemma 4B swarm:   avg_score 1.000, exact 30/30, avg_latency 2.942s, tokens 26,393
-```
-
-Saved result:
-
-```text
-results/20260506_013155_final_adaptive_v3_gemma4b_swarm_vs_gemma12b_30tasks.json
-```
-
-Only try `gemma3:27b` after closing memory-heavy apps, starting with `--limit 1`, and watching Activity Monitor memory pressure.
-
-Low-memory 27B sanity check:
-
-```bash
-python -m src.run_experiment \
-  --mode both \
-  --limit 1 \
-  --run-name sanity_lowmem_gemma_4b_swarm_vs_27b_1task \
-  --execution-order method \
-  --stop-ollama-between-methods \
-  --small-model ollama/gemma3:4b \
-  --large-model ollama/gemma3:27b
-```
+This mode prints a warning because it uses task-specific prompts and canonicalization. Do not treat adaptive results as the main fair Baseline A vs Method D comparison.
 
 ## Benchmark Plan
 
 Current:
 
-- Synthetic persistent-stream benchmark with gold answers.
+- Synthetic persistent-stream benchmark with gold answers and aliases.
 
 Next:
 
@@ -315,7 +218,7 @@ GAIA is not implemented yet. The current code includes a loader stub so a future
 ## Current Limitations
 
 - synthetic benchmark only
-- simple automatic scoring
+- aliases are manually curated
 - no live streams yet
 - no budget optimization yet
 - no integration with Professor Chandy's message-passing system yet

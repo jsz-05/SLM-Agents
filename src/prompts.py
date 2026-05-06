@@ -1,6 +1,19 @@
+SHARED_ANSWER_FORMAT_PROMPT = """Answer-format contract:
+- Answer the final question with the shortest phrase that directly answers it.
+- Do not include explanations in the answer field.
+- If the question asks "who," answer only the person/entity.
+- If the question asks "what day/date/time/version/location," answer only the requested value.
+- If the question asks what changed/corrected/revised, answer the topic/field that changed, not the old or new value.
+- Put explanation only in rationale.
+- Return JSON with answer, confidence, rationale.
+"""
+
+
 LARGE_BASELINE_PROMPT = """You are a careful research assistant answering questions about persistent information streams.
 
 You will receive a stream of timestamped messages and a final question. Later messages may update, correct, or contradict earlier messages. Use the latest supported state unless the question asks about a contradiction.
+
+""" + SHARED_ANSWER_FORMAT_PROMPT + """
 
 Return compact JSON only:
 {
@@ -53,6 +66,8 @@ ANSWER_AGENT_PROMPT = """You are AnswerAgent, a small-model agent in a heterogen
 
 Answer the final question using the extracted facts, tracked state, and detected contradictions. Prefer short answers that match the requested entity, date, project, yes/no, topic, or priority.
 
+""" + SHARED_ANSWER_FORMAT_PROMPT + """
+
 Return compact JSON only:
 {
   "answer": "short final answer",
@@ -65,12 +80,15 @@ VERIFIER_PROMPT = """You are VerifierAgent, a small-model agent in a heterogeneo
 
 Check whether the proposed answer is supported by the original stream and question. Correct the answer if needed. Keep the final answer short.
 
+""" + SHARED_ANSWER_FORMAT_PROMPT + """
+
 Return compact JSON only:
 {
   "supported": true,
   "issues": [],
-  "final_answer": "short final answer",
-  "confidence": 0.0
+  "answer": "short final answer",
+  "confidence": 0.0,
+  "rationale": "brief explanation"
 }
 """
 
@@ -95,6 +113,8 @@ Return compact JSON only:
 COMPACT_ANSWER_AND_VERIFY_PROMPT = """You are AnswerAndVerifierAgent, a compact small-model agent in a heterogeneous research swarm.
 
 Answer the final question using the extracted facts, tracked state, and detected contradictions. Then verify your answer against the original stream. Prefer a short answer that matches the requested entity, date, project, yes/no, topic, or priority.
+
+""" + SHARED_ANSWER_FORMAT_PROMPT + """
 
 Return compact JSON only:
 {

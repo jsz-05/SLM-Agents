@@ -17,6 +17,7 @@ class StreamTask(BaseModel):
     stream: list[StreamMessage]
     question: str
     gold_answer: str
+    aliases: list[str] = Field(default_factory=list)
 
 
 class ModelCallResult(BaseModel):

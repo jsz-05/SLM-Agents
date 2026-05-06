@@ -1,3 +1,11 @@
+"""Exploratory adaptive swarm ablation.
+
+This module intentionally contains task-specific prompting and deterministic
+canonicalization. It is useful for debugging upper-bound behavior on the
+synthetic benchmark, but it is not the default fair Baseline A vs Method D
+comparison.
+"""
+
 from __future__ import annotations
 
 import json
@@ -5,6 +13,7 @@ import re
 from typing import Any
 
 from src.models import call_model
+from src.postprocess import clean_answer
 from src.schemas import MethodResult, ModelCallResult, StreamTask
 
 
@@ -251,7 +260,7 @@ def run_adaptive_swarm(
     final_answer = _canonicalize_answer(task, verified_answer)
 
     return MethodResult(
-        answer=final_answer,
+        answer=clean_answer(final_answer),
         confidence=_coerce_confidence(verifier.get("confidence")),
         rationale=str(verifier.get("rationale") or draft.get("reason") or ""),
         raw={

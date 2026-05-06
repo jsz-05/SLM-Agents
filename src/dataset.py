@@ -8,6 +8,9 @@ from src.schemas import StreamTask
 
 def load_stream_tasks(path: str, limit: int | None = None) -> list[StreamTask]:
     tasks: list[StreamTask] = []
+    if limit == 0:
+        return tasks
+
     data_path = Path(path)
 
     with data_path.open("r", encoding="utf-8") as f:

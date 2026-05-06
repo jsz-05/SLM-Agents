@@ -15,6 +15,7 @@ from tqdm import tqdm
 from src.dataset import load_stream_tasks
 from src.evaluator import evaluate_task_result, summarize_results
 from src.model_names import normalize_model_name
+from src.report import write_markdown_summary
 from src.schemas import MethodResult, StreamTask
 
 
@@ -180,7 +181,7 @@ def parse_args() -> argparse.Namespace:
         "--swarm-agents",
         type=int,
         choices=[3, 5],
-        default=5,
+        default=3,
         help="Use the full 5-agent swarm or a compact 3-agent swarm.",
     )
     parser.add_argument(
@@ -197,13 +198,19 @@ def main() -> None:
     args.large_model = normalize_model_name(args.large_model)
     args.small_model = normalize_model_name(args.small_model)
 
+    if args.swarm_architecture == "adaptive":
+        print(
+            "WARNING: adaptive architecture uses task-specific prompts/canonicalization "
+            "and should be treated as exploratory, not as the main fair comparison."
+        )
+
     if args.mode in ("baseline", "both"):
-        from src.baseline_large import run_large_baseline
+        from src.agents.baseline_large import run_large_baseline
     if args.mode in ("swarm", "both"):
         if args.swarm_architecture == "adaptive":
-            from src.swarm_adaptive import run_adaptive_swarm
+            from src.agents.swarm_adaptive import run_adaptive_swarm
         else:
-            from src.swarm_small import run_small_swarm
+            from src.agents.swarm_pipeline import run_small_swarm
 
     output = args.output or _default_output_path(args.run_name)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
@@ -291,20 +298,27 @@ def main() -> None:
             _stop_ollama_model(args.small_model)
 
     summary = summarize_results(records)
+    config = {
+        "data": args.data,
+        "limit": args.limit,
+        "mode": args.mode,
+        "large_model": args.large_model,
+        "small_model": args.small_model,
+        "temperature": args.temperature,
+        "run_name": args.run_name,
+        "execution_order": args.execution_order,
+        "stop_ollama_between_methods": args.stop_ollama_between_methods,
+        "swarm_agents": args.swarm_agents,
+        "swarm_architecture": args.swarm_architecture,
+    }
+    if args.swarm_architecture == "adaptive":
+        config["fairness_warning"] = (
+            "adaptive architecture uses task-specific prompts/canonicalization "
+            "and is exploratory, not the main fair comparison"
+        )
+
     payload = {
-        "config": {
-            "data": args.data,
-            "limit": args.limit,
-            "mode": args.mode,
-            "large_model": args.large_model,
-            "small_model": args.small_model,
-            "temperature": args.temperature,
-            "run_name": args.run_name,
-            "execution_order": args.execution_order,
-            "stop_ollama_between_methods": args.stop_ollama_between_methods,
-            "swarm_agents": args.swarm_agents,
-            "swarm_architecture": args.swarm_architecture,
-        },
+        "config": config,
         "summary": summary,
         "records": records,
         "todos": [
@@ -316,7 +330,9 @@ def main() -> None:
     with Path(output).open("w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=True, default=_json_default)
 
+    markdown_output = write_markdown_summary(output, config, summary, records)
     _print_summary(summary, output)
+    print(f"Markdown summary: {markdown_output}")
     _print_errors(records)
 
 

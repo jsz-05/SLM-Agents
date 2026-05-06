@@ -1,3 +1,14 @@
+"""Method D default: fair role-specialized small-model pipeline.
+
+The default path uses three agents:
+- FactExtractorAgent
+- StateAndContradictionAgent
+- AnswerAndVerifierAgent
+
+The optional five-agent path keeps the original fuller decomposition for
+ablation, but neither path uses task-specific gold-label canonicalization.
+"""
+
 from __future__ import annotations
 
 import json
@@ -5,6 +16,7 @@ import re
 from typing import Any
 
 from src.models import call_model
+from src.postprocess import clean_answer
 from src.prompts import (
     ANSWER_AGENT_PROMPT,
     COMPACT_ANSWER_AND_VERIFY_PROMPT,
@@ -149,11 +161,11 @@ def run_small_swarm(
     )
     calls.append(verification_call)
 
-    final_answer = str(
+    final_answer = clean_answer(str(
         verification.get("final_answer")
         or verification.get("answer")
         or proposed_answer
-    ).strip()
+    ))
     confidence = _coerce_confidence(
         verification.get("confidence", answer_agent.get("confidence"))
     )
@@ -235,11 +247,11 @@ def _run_compact_swarm(
     )
     calls.append(answer_call)
 
-    final_answer = str(
+    final_answer = clean_answer(str(
         answer_agent.get("answer")
         or answer_agent.get("final_answer")
         or answer_call.content
-    ).strip()
+    ))
     rationale = answer_agent.get("rationale")
     if rationale is not None:
         rationale = str(rationale)
