@@ -135,6 +135,26 @@ def _stop_ollama_model(model: str) -> None:
         print("Could not stop model because the ollama command was not found.")
 
 
+def _warmup_model(model: str, temperature: float) -> None:
+    from src.models import call_model
+
+    print(f"\nWarming up model: {model}")
+    call_model(
+        model=model,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a warmup call. Return compact JSON only.",
+            },
+            {
+                "role": "user",
+                "content": 'Return {"ok": true}.',
+            },
+        ],
+        temperature=temperature,
+    )
+
+
 def _fmt(value: Any) -> str:
     if value is None:
         return "n/a"
@@ -178,6 +198,19 @@ def parse_args() -> argparse.Namespace:
         help="Unload Ollama models between baseline and swarm runs to reduce memory pressure.",
     )
     parser.add_argument(
+        "--warmup-models",
+        action="store_true",
+        help="Run one untimed warmup call before each method's measured tasks.",
+    )
+    parser.add_argument(
+        "--ollama-keep-alive",
+        default=os.getenv("OLLAMA_KEEP_ALIVE", "0"),
+        help=(
+            "Ollama keep_alive value for model calls. Use with --warmup-models, "
+            "for example 10m, so warmup keeps the model resident during the method run."
+        ),
+    )
+    parser.add_argument(
         "--swarm-agents",
         type=int,
         choices=[3, 5],
@@ -197,6 +230,7 @@ def main() -> None:
     args = parse_args()
     args.large_model = normalize_model_name(args.large_model)
     args.small_model = normalize_model_name(args.small_model)
+    os.environ["OLLAMA_KEEP_ALIVE"] = args.ollama_keep_alive
 
     if args.swarm_architecture == "adaptive":
         print(
@@ -251,6 +285,9 @@ def main() -> None:
         )
 
     if args.execution_order == "method" and args.mode == "both":
+        if args.warmup_models:
+            _warmup_model(args.large_model, args.temperature)
+
         for record, task in tqdm(
             zip(records, tasks),
             total=len(tasks),
@@ -260,6 +297,9 @@ def main() -> None:
 
         if args.stop_ollama_between_methods:
             _stop_ollama_model(args.large_model)
+
+        if args.warmup_models:
+            _warmup_model(args.small_model, args.temperature)
 
         for record, task in tqdm(
             zip(records, tasks),
@@ -271,6 +311,11 @@ def main() -> None:
         if args.stop_ollama_between_methods:
             _stop_ollama_model(args.small_model)
     else:
+        if args.warmup_models and args.mode in ("baseline", "both"):
+            _warmup_model(args.large_model, args.temperature)
+        if args.warmup_models and args.mode in ("swarm", "both"):
+            _warmup_model(args.small_model, args.temperature)
+
         for record, task in tqdm(zip(records, tasks), total=len(tasks), desc="Running tasks"):
             if args.mode in ("baseline", "both"):
                 run_baseline(record, task)
@@ -308,6 +353,8 @@ def main() -> None:
         "run_name": args.run_name,
         "execution_order": args.execution_order,
         "stop_ollama_between_methods": args.stop_ollama_between_methods,
+        "warmup_models": args.warmup_models,
+        "ollama_keep_alive": args.ollama_keep_alive,
         "swarm_agents": args.swarm_agents,
         "swarm_architecture": args.swarm_architecture,
     }
