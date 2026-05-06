@@ -1,0 +1,190 @@
+{
+  "config": {
+    "data": "data/synthetic_streams.jsonl",
+    "limit": 1,
+    "mode": "both",
+    "large_model": "ollama/gemma3:12b",
+    "small_model": "ollama/gemma3:4b",
+    "temperature": 0.0,
+    "run_name": "sanity_gemma4b_3agent_swarm_vs_gemma12b_1task",
+    "execution_order": "method",
+    "stop_ollama_between_methods": true,
+    "swarm_agents": 3
+  },
+  "summary": {
+    "n": 1,
+    "baseline_avg_score": 1.0,
+    "swarm_avg_score": 1.0,
+    "baseline_exact_count": 1,
+    "swarm_exact_count": 1,
+    "baseline_contains_count": 1,
+    "swarm_contains_count": 1,
+    "baseline_avg_latency": 7.683724917000063,
+    "swarm_avg_latency": 9.189505415999975,
+    "baseline_total_tokens": 281,
+    "swarm_total_tokens": 1429,
+    "baseline_total_calls": 1,
+    "swarm_total_calls": 3
+  },
+  "records": [
+    {
+      "task": {
+        "id": "syn_001",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "lab email",
+            "text": "Maya said the Aurora ablation report would be discussed on Friday."
+          },
+          {
+            "t": 2,
+            "source": "Slack #aurora",
+            "text": "The Friday slot is now blocked by the safety review."
+          },
+          {
+            "t": 3,
+            "source": "Slack #aurora",
+            "text": "Maya moved the Aurora ablation discussion to Monday at 10 AM."
+          },
+          {
+            "t": 4,
+            "source": "calendar memo",
+            "text": "Final calendar shows Aurora ablation discussion on Monday, owner Maya."
+          }
+        ],
+        "question": "What day is the Aurora ablation discussion currently scheduled for?",
+        "gold_answer": "Monday"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Monday",
+          "confidence": 1.0,
+          "rationale": "The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Monday",
+              "confidence": 1.0,
+              "rationale": "The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo."
+            },
+            "model_response": {
+              "id": "chatcmpl-69e6c16f-a96f-446b-ab93-db2c9c88df3b",
+              "created": 1778052805,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 61,
+                "prompt_tokens": 220,
+                "total_tokens": 281,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 220,
+          "output_tokens": 61,
+          "total_tokens": 281,
+          "latency_seconds": 7.683724917000063
+        },
+        "metrics": {
+          "gold_answer": "Monday",
+          "prediction": "Monday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Monday",
+          "confidence": 1.0,
+          "rationale": "The final calendar memo and Maya's update on Slack confirm the discussion is now scheduled for Monday at 10 AM.",
+          "raw": {
+            "swarm_agents": 3,
+            "facts": {
+              "raw_output": "```json\n{\n  \"facts\": [\n    {\"t\": 1, \"source\": \"email\", \"fact\": \"Maya said the Aurora ablation report would be discussed on Friday.\"},\n    {\"t\": 2, \"source\": \"Slack #aurora\", \"fact\": \"The Friday slot is now blocked by the safety review.\"},\n    {\"t\": 3, \"source\": \"Slack #aurora\", \"fact\": \"Maya moved the Aurora ablation discussion to Monday at 10 AM.\"},\n    {\"t\": 4, \"source\": \"calendar memo\", \"fact\": \"Final calendar shows Aurora ablation discussion on Monday, owner Maya.\"}\n  ]\n}\n```",
+              "parsed_output": {
+                "facts": [
+                  {
+                    "t": 1,
+                    "source": "email",
+                    "fact": "Maya said the Aurora ablation report would be discussed on Friday."
+                  },
+                  {
+                    "t": 2,
+                    "source": "Slack #aurora",
+                    "fact": "The Friday slot is now blocked by the safety review."
+                  },
+                  {
+                    "t": 3,
+                    "source": "Slack #aurora",
+                    "fact": "Maya moved the Aurora ablation discussion to Monday at 10 AM."
+                  },
+                  {
+                    "t": 4,
+                    "source": "calendar memo",
+                    "fact": "Final calendar shows Aurora ablation discussion on Monday, owner Maya."
+                  }
+                ]
+              }
+            },
+            "state_and_contradictions": {
+              "raw_output": "```json\n{\n  \"state\": {\n    \"entity_or_topic\": \"Aurora ablation discussion is scheduled for Monday at 10 AM.\"\n  },\n  \"updates\": [\n    \"The discussion was initially scheduled for Friday but was subsequently moved to Monday.\"\n  ],\n  \"contradictions\": []\n}\n```",
+              "parsed_output": {
+                "state": {
+                  "entity_or_topic": "Aurora ablation discussion is scheduled for Monday at 10 AM."
+                },
+                "updates": [
+                  "The discussion was initially scheduled for Friday but was subsequently moved to Monday."
+                ],
+                "contradictions": []
+              }
+            },
+            "answer_and_verification": {
+              "raw_output": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The final calendar memo and Maya's update on Slack confirm the discussion is now scheduled for Monday at 10 AM.\",\n  \"supported\": true,\n  \"issues\": []\n}\n```",
+              "parsed_output": {
+                "answer": "Monday",
+                "confidence": 1.0,
+                "rationale": "The final calendar memo and Maya's update on Slack confirm the discussion is now scheduled for Monday at 10 AM.",
+                "supported": true,
+                "issues": []
+              }
+            }
+          },
+          "model_calls": 3,
+          "input_tokens": 1136,
+          "output_tokens": 293,
+          "total_tokens": 1429,
+          "latency_seconds": 9.189505415999975
+        },
+        "metrics": {
+          "gold_answer": "Monday",
+          "prediction": "Monday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    }
+  ],
+  "todos": [
+    "Add a GAIA Level 1 loader that emits the same StreamTask-like interface or a compatible benchmark task schema.",
+    "Add tool-use and browsing adapters for GAIA without changing the baseline/swarm result and evaluator contract."
+  ]
+}

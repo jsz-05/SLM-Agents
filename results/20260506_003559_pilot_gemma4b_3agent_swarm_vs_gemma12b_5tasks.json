@@ -1,0 +1,806 @@
+{
+  "config": {
+    "data": "data/synthetic_streams.jsonl",
+    "limit": 5,
+    "mode": "both",
+    "large_model": "ollama/gemma3:12b",
+    "small_model": "ollama/gemma3:4b",
+    "temperature": 0.0,
+    "run_name": "pilot_gemma4b_3agent_swarm_vs_gemma12b_5tasks",
+    "execution_order": "method",
+    "stop_ollama_between_methods": true,
+    "swarm_agents": 3
+  },
+  "summary": {
+    "n": 5,
+    "baseline_avg_score": 0.75,
+    "swarm_avg_score": 0.8,
+    "baseline_exact_count": 3,
+    "swarm_exact_count": 4,
+    "baseline_contains_count": 4,
+    "swarm_contains_count": 4,
+    "baseline_avg_latency": 4.448707416399975,
+    "swarm_avg_latency": 7.780876674799993,
+    "baseline_total_tokens": 1418,
+    "swarm_total_tokens": 7107,
+    "baseline_total_calls": 5,
+    "swarm_total_calls": 15
+  },
+  "records": [
+    {
+      "task": {
+        "id": "syn_001",
+        "task_type": "state_tracking",
+        "stream": [
+          {
+            "t": 1,
+            "source": "lab email",
+            "text": "Maya said the Aurora ablation report would be discussed on Friday."
+          },
+          {
+            "t": 2,
+            "source": "Slack #aurora",
+            "text": "The Friday slot is now blocked by the safety review."
+          },
+          {
+            "t": 3,
+            "source": "Slack #aurora",
+            "text": "Maya moved the Aurora ablation discussion to Monday at 10 AM."
+          },
+          {
+            "t": 4,
+            "source": "calendar memo",
+            "text": "Final calendar shows Aurora ablation discussion on Monday, owner Maya."
+          }
+        ],
+        "question": "What day is the Aurora ablation discussion currently scheduled for?",
+        "gold_answer": "Monday"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Monday",
+          "confidence": 1.0,
+          "rationale": "The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Monday",
+              "confidence": 1.0,
+              "rationale": "The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo."
+            },
+            "model_response": {
+              "id": "chatcmpl-373e5ce0-a930-482e-9606-5084a52e91cd",
+              "created": 1778052967,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The discussion was initially scheduled for Friday, but was moved to Monday at 10 AM in Slack and confirmed in the calendar memo.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 61,
+                "prompt_tokens": 220,
+                "total_tokens": 281,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 220,
+          "output_tokens": 61,
+          "total_tokens": 281,
+          "latency_seconds": 7.59052629100006
+        },
+        "metrics": {
+          "gold_answer": "Monday",
+          "prediction": "Monday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Monday",
+          "confidence": 1.0,
+          "rationale": "The final calendar memo and Maya's update on Slack confirm the discussion is now scheduled for Monday at 10 AM.",
+          "raw": {
+            "swarm_agents": 3,
+            "facts": {
+              "raw_output": "```json\n{\n  \"facts\": [\n    {\"t\": 1, \"source\": \"email\", \"fact\": \"Maya said the Aurora ablation report would be discussed on Friday.\"},\n    {\"t\": 2, \"source\": \"Slack #aurora\", \"fact\": \"The Friday slot is now blocked by the safety review.\"},\n    {\"t\": 3, \"source\": \"Slack #aurora\", \"fact\": \"Maya moved the Aurora ablation discussion to Monday at 10 AM.\"},\n    {\"t\": 4, \"source\": \"calendar memo\", \"fact\": \"Final calendar shows Aurora ablation discussion on Monday, owner Maya.\"}\n  ]\n}\n```",
+              "parsed_output": {
+                "facts": [
+                  {
+                    "t": 1,
+                    "source": "email",
+                    "fact": "Maya said the Aurora ablation report would be discussed on Friday."
+                  },
+                  {
+                    "t": 2,
+                    "source": "Slack #aurora",
+                    "fact": "The Friday slot is now blocked by the safety review."
+                  },
+                  {
+                    "t": 3,
+                    "source": "Slack #aurora",
+                    "fact": "Maya moved the Aurora ablation discussion to Monday at 10 AM."
+                  },
+                  {
+                    "t": 4,
+                    "source": "calendar memo",
+                    "fact": "Final calendar shows Aurora ablation discussion on Monday, owner Maya."
+                  }
+                ]
+              }
+            },
+            "state_and_contradictions": {
+              "raw_output": "```json\n{\n  \"state\": {\n    \"entity_or_topic\": \"Aurora ablation discussion is scheduled for Monday at 10 AM.\"\n  },\n  \"updates\": [\n    \"The discussion was initially scheduled for Friday but was subsequently moved to Monday.\"\n  ],\n  \"contradictions\": []\n}\n```",
+              "parsed_output": {
+                "state": {
+                  "entity_or_topic": "Aurora ablation discussion is scheduled for Monday at 10 AM."
+                },
+                "updates": [
+                  "The discussion was initially scheduled for Friday but was subsequently moved to Monday."
+                ],
+                "contradictions": []
+              }
+            },
+            "answer_and_verification": {
+              "raw_output": "```json\n{\n  \"answer\": \"Monday\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The final calendar memo and Maya's update on Slack confirm the discussion is now scheduled for Monday at 10 AM.\",\n  \"supported\": true,\n  \"issues\": []\n}\n```",
+              "parsed_output": {
+                "answer": "Monday",
+                "confidence": 1.0,
+                "rationale": "The final calendar memo and Maya's update on Slack confirm the discussion is now scheduled for Monday at 10 AM.",
+                "supported": true,
+                "issues": []
+              }
+            }
+          },
+          "model_calls": 3,
+          "input_tokens": 1136,
+          "output_tokens": 293,
+          "total_tokens": 1429,
+          "latency_seconds": 9.190507875000094
+        },
+        "metrics": {
+          "gold_answer": "Monday",
+          "prediction": "Monday",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_002",
+        "task_type": "contradiction_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "finance email",
+            "text": "The startup budget for the wet-lab pilot is approved at $40,000."
+          },
+          {
+            "t": 2,
+            "source": "founder Slack",
+            "text": "Correction: the wet-lab pilot budget is $32,000, not $40,000."
+          },
+          {
+            "t": 3,
+            "source": "board memo",
+            "text": "Use $32,000 in the pilot plan sent to investors."
+          }
+        ],
+        "question": "Which topic was corrected in the stream?",
+        "gold_answer": "budget amount"
+      },
+      "baseline": {
+        "result": {
+          "answer": "The wet-lab pilot budget.",
+          "confidence": 1.0,
+          "rationale": "The stream indicates an initial budget of $40,000 was approved, then corrected to $32,000 in subsequent messages from the founder and board memo.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"The wet-lab pilot budget.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The stream indicates an initial budget of $40,000 was approved, then corrected to $32,000 in subsequent messages from the founder and board memo.\"\n}\n```",
+            "parsed_output": {
+              "answer": "The wet-lab pilot budget.",
+              "confidence": 1.0,
+              "rationale": "The stream indicates an initial budget of $40,000 was approved, then corrected to $32,000 in subsequent messages from the founder and board memo."
+            },
+            "model_response": {
+              "id": "chatcmpl-e12ca6ba-8587-4cf4-aa85-da65658d441c",
+              "created": 1778052971,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"The wet-lab pilot budget.\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The stream indicates an initial budget of $40,000 was approved, then corrected to $32,000 in subsequent messages from the founder and board memo.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 76,
+                "prompt_tokens": 217,
+                "total_tokens": 293,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 217,
+          "output_tokens": 76,
+          "total_tokens": 293,
+          "latency_seconds": 3.911553333000029
+        },
+        "metrics": {
+          "gold_answer": "budget amount",
+          "prediction": "The wet-lab pilot budget.",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "budget",
+          "confidence": 1.0,
+          "rationale": "The stream contains a correction regarding the wet-lab pilot budget, specifically the amount of $32,000.",
+          "raw": {
+            "swarm_agents": 3,
+            "facts": {
+              "raw_output": "```json\n{\n  \"facts\": [\n    {\"t\": 1, \"source\": \"email\", \"fact\": \"The startup budget for the wet-lab pilot is approved at $40,000.\"},\n    {\"t\": 2, \"source\": \"Slack\", \"fact\": \"Correction: the wet-lab pilot budget is $32,000, not $40,000.\"},\n    {\"t\": 3, \"source\": \"board memo\", \"fact\": \"Use $32,000 in the pilot plan sent to investors.\"}\n  ]\n}\n```",
+              "parsed_output": {
+                "facts": [
+                  {
+                    "t": 1,
+                    "source": "email",
+                    "fact": "The startup budget for the wet-lab pilot is approved at $40,000."
+                  },
+                  {
+                    "t": 2,
+                    "source": "Slack",
+                    "fact": "Correction: the wet-lab pilot budget is $32,000, not $40,000."
+                  },
+                  {
+                    "t": 3,
+                    "source": "board memo",
+                    "fact": "Use $32,000 in the pilot plan sent to investors."
+                  }
+                ]
+              }
+            },
+            "state_and_contradictions": {
+              "raw_output": "```json\n{\n  \"state\": {\n    \"entity_or_topic\": \"Wet-lab pilot budget is $32,000\"\n  },\n  \"updates\": [\n    \"Board memo confirms $32,000 as the approved budget.\"\n  ],\n  \"contradictions\": []\n}\n```",
+              "parsed_output": {
+                "state": {
+                  "entity_or_topic": "Wet-lab pilot budget is $32,000"
+                },
+                "updates": [
+                  "Board memo confirms $32,000 as the approved budget."
+                ],
+                "contradictions": []
+              }
+            },
+            "answer_and_verification": {
+              "raw_output": "```json\n{\n  \"answer\": \"budget\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The stream contains a correction regarding the wet-lab pilot budget, specifically the amount of $32,000.\",\n  \"supported\": true,\n  \"issues\": []\n}\n```",
+              "parsed_output": {
+                "answer": "budget",
+                "confidence": 1.0,
+                "rationale": "The stream contains a correction regarding the wet-lab pilot budget, specifically the amount of $32,000.",
+                "supported": true,
+                "issues": []
+              }
+            }
+          },
+          "model_calls": 3,
+          "input_tokens": 1093,
+          "output_tokens": 284,
+          "total_tokens": 1377,
+          "latency_seconds": 7.027325373999929
+        },
+        "metrics": {
+          "gold_answer": "budget amount",
+          "prediction": "budget",
+          "exact_match": false,
+          "contains_gold": false,
+          "score": 0.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_003",
+        "task_type": "entity_assignment",
+        "stream": [
+          {
+            "t": 1,
+            "source": "program email",
+            "text": "Dr. Rao will review the medication safety appendix."
+          },
+          {
+            "t": 2,
+            "source": "Slack #submissions",
+            "text": "Dr. Rao is unavailable during finals week."
+          },
+          {
+            "t": 3,
+            "source": "program email",
+            "text": "Dr. Lin is taking over the medication safety appendix review."
+          },
+          {
+            "t": 4,
+            "source": "checklist",
+            "text": "Safety appendix reviewer: Dr. Lin."
+          }
+        ],
+        "question": "Who is currently assigned to review the medication safety appendix?",
+        "gold_answer": "Dr. Lin"
+      },
+      "baseline": {
+        "result": {
+          "answer": "Dr. Lin",
+          "confidence": 1.0,
+          "rationale": "The program email at t=3 states Dr. Lin is taking over the review, and the checklist at t=4 confirms this assignment.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"Dr. Lin\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The program email at t=3 states Dr. Lin is taking over the review, and the checklist at t=4 confirms this assignment.\"\n}\n```",
+            "parsed_output": {
+              "answer": "Dr. Lin",
+              "confidence": 1.0,
+              "rationale": "The program email at t=3 states Dr. Lin is taking over the review, and the checklist at t=4 confirms this assignment."
+            },
+            "model_response": {
+              "id": "chatcmpl-4bba06a7-1804-4f67-92f0-4ae6dcb6704a",
+              "created": 1778052974,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"Dr. Lin\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The program email at t=3 states Dr. Lin is taking over the review, and the checklist at t=4 confirms this assignment.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 64,
+                "prompt_tokens": 206,
+                "total_tokens": 270,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 206,
+          "output_tokens": 64,
+          "total_tokens": 270,
+          "latency_seconds": 3.302253500000006
+        },
+        "metrics": {
+          "gold_answer": "Dr. Lin",
+          "prediction": "Dr. Lin",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "Dr. Lin",
+          "confidence": 1.0,
+          "rationale": "The stream indicates that Dr. Lin is now the reviewer of the medication safety appendix, as stated in the program email at t=3 and confirmed by the checklist at t=4.",
+          "raw": {
+            "swarm_agents": 3,
+            "facts": {
+              "raw_output": "```json\n{\n  \"facts\": [\n    {\"t\": 1, \"source\": \"email\", \"fact\": \"Dr. Rao will review the medication safety appendix.\"},\n    {\"t\": 2, \"source\": \"Slack #submissions\", \"fact\": \"Dr. Rao is unavailable during finals week.\"},\n    {\"t\": 3, \"source\": \"program email\", \"fact\": \"Dr. Lin is taking over the medication safety appendix review.\"},\n    {\"t\": 4, \"source\": \"checklist\", \"fact\": \"Safety appendix reviewer: Dr. Lin.\"}\n  ]\n}\n```",
+              "parsed_output": {
+                "facts": [
+                  {
+                    "t": 1,
+                    "source": "email",
+                    "fact": "Dr. Rao will review the medication safety appendix."
+                  },
+                  {
+                    "t": 2,
+                    "source": "Slack #submissions",
+                    "fact": "Dr. Rao is unavailable during finals week."
+                  },
+                  {
+                    "t": 3,
+                    "source": "program email",
+                    "fact": "Dr. Lin is taking over the medication safety appendix review."
+                  },
+                  {
+                    "t": 4,
+                    "source": "checklist",
+                    "fact": "Safety appendix reviewer: Dr. Lin."
+                  }
+                ]
+              }
+            },
+            "state_and_contradictions": {
+              "raw_output": "```json\n{\n  \"state\": {\n    \"entity_or_topic\": \"Dr. Lin is reviewing the medication safety appendix.\"\n  },\n  \"updates\": [\n    \"Dr. Rao's review has been superseded by Dr. Lin.\"\n  ],\n  \"contradictions\": []\n}\n```",
+              "parsed_output": {
+                "state": {
+                  "entity_or_topic": "Dr. Lin is reviewing the medication safety appendix."
+                },
+                "updates": [
+                  "Dr. Rao's review has been superseded by Dr. Lin."
+                ],
+                "contradictions": []
+              }
+            },
+            "answer_and_verification": {
+              "raw_output": "```json\n{\n  \"answer\": \"Dr. Lin\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The stream indicates that Dr. Lin is now the reviewer of the medication safety appendix, as stated in the program email at t=3 and confirmed by the checklist at t=4.\",\n  \"supported\": true,\n  \"issues\": []\n}\n```",
+              "parsed_output": {
+                "answer": "Dr. Lin",
+                "confidence": 1.0,
+                "rationale": "The stream indicates that Dr. Lin is now the reviewer of the medication safety appendix, as stated in the program email at t=3 and confirmed by the checklist at t=4.",
+                "supported": true,
+                "issues": []
+              }
+            }
+          },
+          "model_calls": 3,
+          "input_tokens": 1063,
+          "output_tokens": 290,
+          "total_tokens": 1353,
+          "latency_seconds": 7.111945875999936
+        },
+        "metrics": {
+          "gold_answer": "Dr. Lin",
+          "prediction": "Dr. Lin",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_004",
+        "task_type": "priority_detection",
+        "stream": [
+          {
+            "t": 1,
+            "source": "Slack #cluster",
+            "text": "The embedding refresh is medium priority after lunch."
+          },
+          {
+            "t": 2,
+            "source": "pager note",
+            "text": "GPU queue failures are blocking all Aurora experiments."
+          },
+          {
+            "t": 3,
+            "source": "PI email",
+            "text": "Treat the GPU queue as the top priority until jobs restart."
+          },
+          {
+            "t": 4,
+            "source": "Slack #cluster",
+            "text": "Embedding refresh can wait until the GPU queue is stable."
+          }
+        ],
+        "question": "What is the current top priority?",
+        "gold_answer": "GPU queue"
+      },
+      "baseline": {
+        "result": {
+          "answer": "GPU queue stability",
+          "confidence": 1.0,
+          "rationale": "The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it should be addressed before other tasks.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"GPU queue stability\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it should be addressed before other tasks.\"\n}\n```",
+            "parsed_output": {
+              "answer": "GPU queue stability",
+              "confidence": 1.0,
+              "rationale": "The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it should be addressed before other tasks."
+            },
+            "model_response": {
+              "id": "chatcmpl-172fcfb1-1a3b-4bb8-9854-7259256759cb",
+              "created": 1778052978,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"GPU queue stability\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI email (t=3) explicitly states the GPU queue is the top priority, and the Slack message (t=4) confirms it should be addressed before other tasks.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 72,
+                "prompt_tokens": 206,
+                "total_tokens": 278,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 206,
+          "output_tokens": 72,
+          "total_tokens": 278,
+          "latency_seconds": 3.6167812499998035
+        },
+        "metrics": {
+          "gold_answer": "GPU queue",
+          "prediction": "GPU queue stability",
+          "exact_match": false,
+          "contains_gold": true,
+          "score": 0.75
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "GPU queue",
+          "confidence": 1.0,
+          "rationale": "The PI email explicitly states that treating the GPU queue as the top priority is the current requirement until jobs restart.",
+          "raw": {
+            "swarm_agents": 3,
+            "facts": {
+              "raw_output": "```json\n{\n  \"facts\": [\n    {\"t\": 1, \"source\": \"Slack #cluster\", \"fact\": \"The embedding refresh is medium priority after lunch.\"},\n    {\"t\": 2, \"source\": \"pager note\", \"fact\": \"GPU queue failures are blocking all Aurora experiments.\"},\n    {\"t\": 3, \"source\": \"PI email\", \"fact\": \"Treat the GPU queue as the top priority until jobs restart.\"},\n    {\"t\": 4, \"source\": \"Slack #cluster\", \"fact\": \"Embedding refresh can wait until the GPU queue is stable.\"}\n  ]\n}\n```",
+              "parsed_output": {
+                "facts": [
+                  {
+                    "t": 1,
+                    "source": "Slack #cluster",
+                    "fact": "The embedding refresh is medium priority after lunch."
+                  },
+                  {
+                    "t": 2,
+                    "source": "pager note",
+                    "fact": "GPU queue failures are blocking all Aurora experiments."
+                  },
+                  {
+                    "t": 3,
+                    "source": "PI email",
+                    "fact": "Treat the GPU queue as the top priority until jobs restart."
+                  },
+                  {
+                    "t": 4,
+                    "source": "Slack #cluster",
+                    "fact": "Embedding refresh can wait until the GPU queue is stable."
+                  }
+                ]
+              }
+            },
+            "state_and_contradictions": {
+              "raw_output": "```json\n{\n  \"state\": {\n    \"entity_or_topic\": \"GPU queue stability is the highest priority; embedding refresh is secondary and dependent on queue stability.\"\n  },\n  \"updates\": [\n    \"Priority shifted from embedding refresh to GPU queue stability.\"\n  ],\n  \"contradictions\": [\n    {\n      \"topic\": \"embedding refresh priority\",\n      \"conflict\": \"Earlier statements indicated medium priority after lunch, now dependent on queue stability.\",\n      \"resolution\": \"Latest statement prioritizes GPU queue stability, delaying the embedding refresh.\"\n    }\n  ]\n}\n```",
+              "parsed_output": {
+                "state": {
+                  "entity_or_topic": "GPU queue stability is the highest priority; embedding refresh is secondary and dependent on queue stability."
+                },
+                "updates": [
+                  "Priority shifted from embedding refresh to GPU queue stability."
+                ],
+                "contradictions": [
+                  {
+                    "topic": "embedding refresh priority",
+                    "conflict": "Earlier statements indicated medium priority after lunch, now dependent on queue stability.",
+                    "resolution": "Latest statement prioritizes GPU queue stability, delaying the embedding refresh."
+                  }
+                ]
+              }
+            },
+            "answer_and_verification": {
+              "raw_output": "```json\n{\n  \"answer\": \"GPU queue\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The PI email explicitly states that treating the GPU queue as the top priority is the current requirement until jobs restart.\",\n  \"supported\": true,\n  \"issues\": []\n}\n```",
+              "parsed_output": {
+                "answer": "GPU queue",
+                "confidence": 1.0,
+                "rationale": "The PI email explicitly states that treating the GPU queue as the top priority is the current requirement until jobs restart.",
+                "supported": true,
+                "issues": []
+              }
+            }
+          },
+          "model_calls": 3,
+          "input_tokens": 1143,
+          "output_tokens": 341,
+          "total_tokens": 1484,
+          "latency_seconds": 8.069971459000044
+        },
+        "metrics": {
+          "gold_answer": "GPU queue",
+          "prediction": "GPU queue",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    },
+    {
+      "task": {
+        "id": "syn_005",
+        "task_type": "multi_hop",
+        "stream": [
+          {
+            "t": 1,
+            "source": "conference email",
+            "text": "The poster deadline for Project Cedar is May 14."
+          },
+          {
+            "t": 2,
+            "source": "Slack #cedar",
+            "text": "Cedar poster depends on the final figure from Noah."
+          },
+          {
+            "t": 3,
+            "source": "Slack #cedar",
+            "text": "Noah says the final figure will arrive May 17 after rerunning the assay."
+          },
+          {
+            "t": 4,
+            "source": "conference email",
+            "text": "The organizer granted Cedar an extension to match the final figure date."
+          }
+        ],
+        "question": "What is the current poster deadline for Project Cedar?",
+        "gold_answer": "May 17"
+      },
+      "baseline": {
+        "result": {
+          "answer": "May 17",
+          "confidence": 1.0,
+          "rationale": "The initial deadline was May 14, but the conference email at t=4 states that an extension was granted to match the final figure date, which is May 17.",
+          "raw": {
+            "raw_output": "```json\n{\n  \"answer\": \"May 17\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial deadline was May 14, but the conference email at t=4 states that an extension was granted to match the final figure date, which is May 17.\"\n}\n```",
+            "parsed_output": {
+              "answer": "May 17",
+              "confidence": 1.0,
+              "rationale": "The initial deadline was May 14, but the conference email at t=4 states that an extension was granted to match the final figure date, which is May 17."
+            },
+            "model_response": {
+              "id": "chatcmpl-25322361-c225-4f15-9950-f0d21a78aa66",
+              "created": 1778052982,
+              "model": "ollama/gemma3:12b",
+              "object": "chat.completion",
+              "system_fingerprint": null,
+              "choices": [
+                {
+                  "finish_reason": "stop",
+                  "index": 0,
+                  "message": {
+                    "content": "```json\n{\n  \"answer\": \"May 17\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The initial deadline was May 14, but the conference email at t=4 states that an extension was granted to match the final figure date, which is May 17.\"\n}\n```",
+                    "role": "assistant",
+                    "tool_calls": null,
+                    "function_call": null,
+                    "reasoning_content": null
+                  }
+                }
+              ],
+              "usage": {
+                "completion_tokens": 74,
+                "prompt_tokens": 222,
+                "total_tokens": 296,
+                "completion_tokens_details": null,
+                "prompt_tokens_details": null
+              }
+            }
+          },
+          "model_calls": 1,
+          "input_tokens": 222,
+          "output_tokens": 74,
+          "total_tokens": 296,
+          "latency_seconds": 3.8224227079999764
+        },
+        "metrics": {
+          "gold_answer": "May 17",
+          "prediction": "May 17",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      },
+      "swarm": {
+        "result": {
+          "answer": "May 17",
+          "confidence": 1.0,
+          "rationale": "The organizer granted an extension to match the final figure date (May 17), which is the new deadline for the Project Cedar poster.",
+          "raw": {
+            "swarm_agents": 3,
+            "facts": {
+              "raw_output": "```json\n{\n  \"facts\": [\n    {\"t\": 1, \"source\": \"email\", \"fact\": \"Project Cedar poster deadline is May 14.\"},\n    {\"t\": 2, \"source\": \"Slack #cedar\", \"fact\": \"The Cedar poster depends on the final figure from Noah.\"},\n    {\"t\": 3, \"source\": \"Slack #cedar\", \"fact\": \"Noah will deliver the final figure on May 17 after rerunning the assay.\"},\n    {\"t\": 4, \"source\": \"email\", \"fact\": \"The Cedar organizer granted an extension to match the final figure date.\"}\n  ]\n}\n```",
+              "parsed_output": {
+                "facts": [
+                  {
+                    "t": 1,
+                    "source": "email",
+                    "fact": "Project Cedar poster deadline is May 14."
+                  },
+                  {
+                    "t": 2,
+                    "source": "Slack #cedar",
+                    "fact": "The Cedar poster depends on the final figure from Noah."
+                  },
+                  {
+                    "t": 3,
+                    "source": "Slack #cedar",
+                    "fact": "Noah will deliver the final figure on May 17 after rerunning the assay."
+                  },
+                  {
+                    "t": 4,
+                    "source": "email",
+                    "fact": "The Cedar organizer granted an extension to match the final figure date."
+                  }
+                ]
+              }
+            },
+            "state_and_contradictions": {
+              "raw_output": "```json\n{\n  \"state\": {\n    \"entity_or_topic\": \"Project Cedar poster deadline is May 17 due to the organizer granting an extension to match the final figure date.\"\n  },\n  \"updates\": [\n    \"The deadline has been extended to accommodate Noah's final figure.\"\n  ],\n  \"contradictions\": []\n}\n```",
+              "parsed_output": {
+                "state": {
+                  "entity_or_topic": "Project Cedar poster deadline is May 17 due to the organizer granting an extension to match the final figure date."
+                },
+                "updates": [
+                  "The deadline has been extended to accommodate Noah's final figure."
+                ],
+                "contradictions": []
+              }
+            },
+            "answer_and_verification": {
+              "raw_output": "```json\n{\n  \"answer\": \"May 17\",\n  \"confidence\": 1.0,\n  \"rationale\": \"The organizer granted an extension to match the final figure date (May 17), which is the new deadline for the Project Cedar poster.\",\n  \"supported\": true,\n  \"issues\": []\n}\n```",
+              "parsed_output": {
+                "answer": "May 17",
+                "confidence": 1.0,
+                "rationale": "The organizer granted an extension to match the final figure date (May 17), which is the new deadline for the Project Cedar poster.",
+                "supported": true,
+                "issues": []
+              }
+            }
+          },
+          "model_calls": 3,
+          "input_tokens": 1155,
+          "output_tokens": 309,
+          "total_tokens": 1464,
+          "latency_seconds": 7.50463278999996
+        },
+        "metrics": {
+          "gold_answer": "May 17",
+          "prediction": "May 17",
+          "exact_match": true,
+          "contains_gold": true,
+          "score": 1.0
+        }
+      }
+    }
+  ],
+  "todos": [
+    "Add a GAIA Level 1 loader that emits the same StreamTask-like interface or a compatible benchmark task schema.",
+    "Add tool-use and browsing adapters for GAIA without changing the baseline/swarm result and evaluator contract."
+  ]
+}

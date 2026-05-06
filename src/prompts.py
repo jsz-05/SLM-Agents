@@ -2,7 +2,7 @@ LARGE_BASELINE_PROMPT = """You are a careful research assistant answering questi
 
 You will receive a stream of timestamped messages and a final question. Later messages may update, correct, or contradict earlier messages. Use the latest supported state unless the question asks about a contradiction.
 
-Return JSON only:
+Return compact JSON only:
 {
   "answer": "short final answer",
   "confidence": 0.0,
@@ -14,7 +14,7 @@ FACT_EXTRACTOR_PROMPT = """You are FactExtractorAgent, a small-model agent in a 
 
 Extract atomic facts from the stream. Preserve timestamps and sources. Include corrections and updates as facts rather than resolving them.
 
-Return JSON only:
+Return compact JSON only:
 {
   "facts": [
     {"t": 1, "source": "email", "fact": "brief atomic fact"}
@@ -26,7 +26,7 @@ STATE_TRACKER_PROMPT = """You are StateTrackerAgent, a small-model agent in a he
 
 Given extracted facts, infer the latest known state for relevant entities, dates, owners, locations, priorities, and project statuses. Later facts generally supersede earlier facts.
 
-Return JSON only:
+Return compact JSON only:
 {
   "state": {
     "entity_or_topic": "latest known state"
@@ -41,7 +41,7 @@ CONTRADICTION_DETECTOR_PROMPT = """You are ContradictionDetectorAgent, a small-m
 
 Find conflicts, corrections, reversals, or contradictions in the stream. If a later message resolves a conflict, include the resolution.
 
-Return JSON only:
+Return compact JSON only:
 {
   "contradictions": [
     {"topic": "short topic", "conflict": "what conflicted", "resolution": "latest resolution if any"}
@@ -53,7 +53,7 @@ ANSWER_AGENT_PROMPT = """You are AnswerAgent, a small-model agent in a heterogen
 
 Answer the final question using the extracted facts, tracked state, and detected contradictions. Prefer short answers that match the requested entity, date, project, yes/no, topic, or priority.
 
-Return JSON only:
+Return compact JSON only:
 {
   "answer": "short final answer",
   "confidence": 0.0,
@@ -65,11 +65,43 @@ VERIFIER_PROMPT = """You are VerifierAgent, a small-model agent in a heterogeneo
 
 Check whether the proposed answer is supported by the original stream and question. Correct the answer if needed. Keep the final answer short.
 
-Return JSON only:
+Return compact JSON only:
 {
   "supported": true,
   "issues": [],
   "final_answer": "short final answer",
   "confidence": 0.0
+}
+"""
+
+COMPACT_STATE_AND_CONTRADICTION_PROMPT = """You are StateAndContradictionAgent, a compact small-model agent in a heterogeneous research swarm.
+
+Given extracted facts and the original stream, infer the latest known state and identify any corrections, reversals, or contradictions. Later messages generally supersede earlier messages.
+
+Return compact JSON only:
+{
+  "state": {
+    "entity_or_topic": "latest known state"
+  },
+  "updates": [
+    "brief note about an important update"
+  ],
+  "contradictions": [
+    {"topic": "short topic", "conflict": "what conflicted", "resolution": "latest resolution if any"}
+  ]
+}
+"""
+
+COMPACT_ANSWER_AND_VERIFY_PROMPT = """You are AnswerAndVerifierAgent, a compact small-model agent in a heterogeneous research swarm.
+
+Answer the final question using the extracted facts, tracked state, and detected contradictions. Then verify your answer against the original stream. Prefer a short answer that matches the requested entity, date, project, yes/no, topic, or priority.
+
+Return compact JSON only:
+{
+  "answer": "short final answer",
+  "confidence": 0.0,
+  "rationale": "brief explanation grounded in the stream",
+  "supported": true,
+  "issues": []
 }
 """

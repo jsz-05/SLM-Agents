@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -36,8 +38,16 @@ def _json_default(obj: Any) -> Any:
     return repr(obj)
 
 
-def _default_output_path() -> str:
+def _safe_run_name(name: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9._-]+", "_", name.strip())
+    cleaned = cleaned.strip("._-")
+    return cleaned or "run"
+
+
+def _default_output_path(run_name: str | None = None) -> str:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if run_name:
+        return f"results/{timestamp}_{_safe_run_name(run_name)}.json"
     return f"results/run_{timestamp}.json"
 
 
@@ -102,6 +112,28 @@ def _print_errors(records: list[dict[str, Any]]) -> None:
         print(f"... plus {len(errors) - 3} more error(s). See the saved JSON for details.")
 
 
+def _ollama_model_name(model: str) -> str | None:
+    if not model.startswith("ollama/"):
+        return None
+    return model.removeprefix("ollama/")
+
+
+def _stop_ollama_model(model: str) -> None:
+    ollama_model = _ollama_model_name(model)
+    if not ollama_model:
+        return
+    print(f"\nStopping Ollama model: {ollama_model}")
+    try:
+        subprocess.run(
+            ["ollama", "stop", ollama_model],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        print("Could not stop model because the ollama command was not found.")
+
+
 def _fmt(value: Any) -> str:
     if value is None:
         return "n/a"
@@ -128,6 +160,29 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--output", default=None)
+    parser.add_argument(
+        "--run-name",
+        default=None,
+        help="Optional readable label for the output filename, e.g. sanity_1task.",
+    )
+    parser.add_argument(
+        "--execution-order",
+        choices=["task", "method"],
+        default="task",
+        help="Run both methods per task, or run all baseline tasks before all swarm tasks.",
+    )
+    parser.add_argument(
+        "--stop-ollama-between-methods",
+        action="store_true",
+        help="Unload Ollama models between baseline and swarm runs to reduce memory pressure.",
+    )
+    parser.add_argument(
+        "--swarm-agents",
+        type=int,
+        choices=[3, 5],
+        default=5,
+        help="Use the full 5-agent swarm or a compact 3-agent swarm.",
+    )
     return parser.parse_args()
 
 
@@ -141,36 +196,70 @@ def main() -> None:
     if args.mode in ("swarm", "both"):
         from src.swarm_small import run_small_swarm
 
-    output = args.output or _default_output_path()
+    output = args.output or _default_output_path(args.run_name)
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     tasks = load_stream_tasks(args.data, limit=args.limit)
-    records: list[dict[str, Any]] = []
+    records: list[dict[str, Any]] = [{"task": _model_to_dict(task)} for task in tasks]
 
-    for task in tqdm(tasks, desc="Running tasks"):
-        record: dict[str, Any] = {"task": _model_to_dict(task)}
+    def run_baseline(record: dict[str, Any], task: StreamTask) -> None:
+        record["baseline"] = _run_method_safely(
+            lambda t: run_large_baseline(
+                t,
+                large_model=args.large_model,
+                temperature=args.temperature,
+            ),
+            task,
+        )
 
-        if args.mode in ("baseline", "both"):
-            record["baseline"] = _run_method_safely(
-                lambda t: run_large_baseline(
-                    t,
-                    large_model=args.large_model,
-                    temperature=args.temperature,
-                ),
-                task,
-            )
+    def run_swarm(record: dict[str, Any], task: StreamTask) -> None:
+        record["swarm"] = _run_method_safely(
+            lambda t: run_small_swarm(
+                t,
+                small_model=args.small_model,
+                temperature=args.temperature,
+                swarm_agents=args.swarm_agents,
+            ),
+            task,
+        )
 
-        if args.mode in ("swarm", "both"):
-            record["swarm"] = _run_method_safely(
-                lambda t: run_small_swarm(
-                    t,
-                    small_model=args.small_model,
-                    temperature=args.temperature,
-                ),
-                task,
-            )
+    if args.execution_order == "method" and args.mode == "both":
+        for record, task in tqdm(
+            zip(records, tasks),
+            total=len(tasks),
+            desc="Running baseline",
+        ):
+            run_baseline(record, task)
 
-        records.append(record)
+        if args.stop_ollama_between_methods:
+            _stop_ollama_model(args.large_model)
+
+        for record, task in tqdm(
+            zip(records, tasks),
+            total=len(tasks),
+            desc="Running swarm",
+        ):
+            run_swarm(record, task)
+
+        if args.stop_ollama_between_methods:
+            _stop_ollama_model(args.small_model)
+    else:
+        for record, task in tqdm(zip(records, tasks), total=len(tasks), desc="Running tasks"):
+            if args.mode in ("baseline", "both"):
+                run_baseline(record, task)
+
+            if (
+                args.mode == "both"
+                and args.stop_ollama_between_methods
+                and args.execution_order == "task"
+            ):
+                _stop_ollama_model(args.large_model)
+
+            if args.mode in ("swarm", "both"):
+                run_swarm(record, task)
+
+            if args.stop_ollama_between_methods and args.mode in ("swarm", "both"):
+                _stop_ollama_model(args.small_model)
 
     summary = summarize_results(records)
     payload = {
@@ -181,6 +270,10 @@ def main() -> None:
             "large_model": args.large_model,
             "small_model": args.small_model,
             "temperature": args.temperature,
+            "run_name": args.run_name,
+            "execution_order": args.execution_order,
+            "stop_ollama_between_methods": args.stop_ollama_between_methods,
+            "swarm_agents": args.swarm_agents,
         },
         "summary": summary,
         "records": records,

@@ -7,6 +7,8 @@ from typing import Any
 from src.models import call_model
 from src.prompts import (
     ANSWER_AGENT_PROMPT,
+    COMPACT_ANSWER_AND_VERIFY_PROMPT,
+    COMPACT_STATE_AND_CONTRADICTION_PROMPT,
     CONTRADICTION_DETECTOR_PROMPT,
     FACT_EXTRACTOR_PROMPT,
     STATE_TRACKER_PROMPT,
@@ -38,7 +40,7 @@ def _parse_json_loose(text: str) -> dict[str, Any]:
 
 
 def _json_text(obj: Any) -> str:
-    return json.dumps(obj, ensure_ascii=True, indent=2)
+    return json.dumps(obj, ensure_ascii=True, separators=(",", ":"))
 
 
 def _sum_optional(results: list[ModelCallResult], attr: str) -> int | None:
@@ -78,7 +80,13 @@ def run_small_swarm(
     task: StreamTask,
     small_model: str,
     temperature: float = 0.0,
+    swarm_agents: int = 5,
 ) -> MethodResult:
+    if swarm_agents == 3:
+        return _run_compact_swarm(task, small_model, temperature)
+    if swarm_agents != 5:
+        raise ValueError("swarm_agents must be 3 or 5.")
+
     stream_text = _stream_to_text(task)
     calls: list[ModelCallResult] = []
 
@@ -177,6 +185,82 @@ def run_small_swarm(
             "verification": {
                 "raw_output": verification_call.content,
                 "parsed_output": verification,
+            },
+        },
+        model_calls=len(calls),
+        input_tokens=_sum_optional(calls, "input_tokens"),
+        output_tokens=_sum_optional(calls, "output_tokens"),
+        total_tokens=_sum_optional(calls, "total_tokens"),
+        latency_seconds=sum(call.latency_seconds for call in calls),
+    )
+
+
+def _run_compact_swarm(
+    task: StreamTask,
+    small_model: str,
+    temperature: float = 0.0,
+) -> MethodResult:
+    stream_text = _stream_to_text(task)
+    calls: list[ModelCallResult] = []
+
+    facts_call, facts = _call_agent(
+        small_model,
+        FACT_EXTRACTOR_PROMPT,
+        f"Stream:\n{stream_text}",
+        temperature,
+    )
+    calls.append(facts_call)
+
+    state_contradictions_call, state_contradictions = _call_agent(
+        small_model,
+        COMPACT_STATE_AND_CONTRADICTION_PROMPT,
+        (
+            f"Stream:\n{stream_text}\n\n"
+            f"Extracted facts:\n{_json_text(facts)}"
+        ),
+        temperature,
+    )
+    calls.append(state_contradictions_call)
+
+    answer_call, answer_agent = _call_agent(
+        small_model,
+        COMPACT_ANSWER_AND_VERIFY_PROMPT,
+        (
+            f"Stream:\n{stream_text}\n\n"
+            f"Question: {task.question}\n\n"
+            f"Extracted facts:\n{_json_text(facts)}\n\n"
+            f"State, updates, and contradictions:\n{_json_text(state_contradictions)}"
+        ),
+        temperature,
+    )
+    calls.append(answer_call)
+
+    final_answer = str(
+        answer_agent.get("answer")
+        or answer_agent.get("final_answer")
+        or answer_call.content
+    ).strip()
+    rationale = answer_agent.get("rationale")
+    if rationale is not None:
+        rationale = str(rationale)
+
+    return MethodResult(
+        answer=final_answer,
+        confidence=_coerce_confidence(answer_agent.get("confidence")),
+        rationale=rationale,
+        raw={
+            "swarm_agents": 3,
+            "facts": {
+                "raw_output": facts_call.content,
+                "parsed_output": facts,
+            },
+            "state_and_contradictions": {
+                "raw_output": state_contradictions_call.content,
+                "parsed_output": state_contradictions,
+            },
+            "answer_and_verification": {
+                "raw_output": answer_call.content,
+                "parsed_output": answer_agent,
             },
         },
         model_calls=len(calls),

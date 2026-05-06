@@ -23,7 +23,13 @@ The swarm uses the same small model in five roles:
 - AnswerAgent
 - VerifierAgent
 
-Results are scored against the task's gold answer and saved to `results/run_TIMESTAMP.json`.
+You can also run a compact 3-agent swarm with `--swarm-agents 3`:
+
+- FactExtractorAgent
+- StateAndContradictionAgent
+- AnswerAndVerifierAgent
+
+Results are scored against the task's gold answer and saved to `results/run_TIMESTAMP.json` by default. Use `--run-name` to create readable filenames such as `results/20260505_235000_sanity_1task.json`.
 
 ## Setup
 
@@ -66,6 +72,7 @@ Equivalent explicit command:
 python -m src.run_experiment \
   --mode both \
   --limit 5 \
+  --run-name ollama_gemma_4b_vs_12b_5tasks \
   --small-model ollama/gemma3:4b \
   --large-model ollama/gemma3:12b
 ```
@@ -73,9 +80,44 @@ python -m src.run_experiment \
 Other local pairs you can try:
 
 ```bash
-python -m src.run_experiment --mode both --limit 5 --small-model ollama/qwen3:8b --large-model ollama/qwen3:14b
-python -m src.run_experiment --mode both --limit 5 --small-model ollama/gemma3:4b --large-model ollama/gemma3:27b
+python -m src.run_experiment --mode both --limit 5 --run-name qwen_8b_vs_14b_5tasks --small-model ollama/qwen3:8b --large-model ollama/qwen3:14b
 ```
+
+On a 24GB Mac, avoid `gemma3:27b` for routine runs. A safer comparison is either:
+
+- same family: `gemma3:4b` compact swarm vs `gemma3:12b` baseline
+- roughly 14B baseline: `gemma3:4b` compact swarm vs `qwen3:14b` baseline
+
+Safe 3-agent run against Qwen 14B:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 1 \
+  --run-name sanity_gemma_4b_3agent_swarm_vs_qwen_14b_1task \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --swarm-agents 3 \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/qwen3:14b
+```
+
+`gemma3:27b` can exceed memory on 24GB machines, especially in `--mode both`. Prefer `gemma3:12b` or `qwen3:14b` for routine runs on a 24GB Mac.
+
+If you do test `gemma3:27b`, use method-ordered execution and explicitly unload Ollama between methods:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 1 \
+  --run-name sanity_lowmem_gemma_4b_swarm_vs_27b_1task \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:27b
+```
+
+This runs the 27B baseline first, stops `gemma3:27b`, then runs the 4B swarm. It is slower but much safer on 24GB machines.
 
 ## Option 2: OpenRouter
 
@@ -92,7 +134,7 @@ LARGE_MODEL=openrouter/google/gemma-4-31b-it:free
 Free OpenRouter run:
 
 ```bash
-python -m src.run_experiment --mode both --limit 1
+python -m src.run_experiment --mode both --limit 1 --run-name openrouter_free_1task
 ```
 
 For more reliable experiments, choose paid model IDs from OpenRouter and set them in `.env` or pass them as CLI flags:
@@ -101,6 +143,7 @@ For more reliable experiments, choose paid model IDs from OpenRouter and set the
 python -m src.run_experiment \
   --mode both \
   --limit 5 \
+  --run-name openrouter_paid_5tasks \
   --small-model openrouter/some-small-model \
   --large-model openrouter/some-large-model
 ```
@@ -159,19 +202,61 @@ Token counts come from LiteLLM/provider usage fields when available. If a provid
 Run only the large baseline:
 
 ```bash
-python -m src.run_experiment --mode baseline --limit 5
+python -m src.run_experiment --mode baseline --limit 5 --run-name baseline_5tasks
 ```
 
 Run only the small swarm:
 
 ```bash
-python -m src.run_experiment --mode swarm --limit 5
+python -m src.run_experiment --mode swarm --limit 5 --run-name swarm_5tasks
+```
+
+Run only the compact 3-agent swarm:
+
+```bash
+python -m src.run_experiment --mode swarm --limit 5 --swarm-agents 3 --run-name compact_swarm_3agents_5tasks
 ```
 
 Run both methods:
 
 ```bash
-python -m src.run_experiment --mode both --limit 5
+python -m src.run_experiment --mode both --limit 5 --run-name both_5tasks
+```
+
+Suggested first experiment for 24GB Macs:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 1 \
+  --run-name sanity_gemma_4b_swarm_vs_12b_1task \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:12b
+```
+
+Full synthetic run:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --run-name full_gemma_4b_swarm_vs_12b_30tasks \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:12b
+```
+
+Only try `gemma3:27b` after closing memory-heavy apps, starting with `--limit 1`, and watching Activity Monitor memory pressure.
+
+Low-memory 27B sanity check:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 1 \
+  --run-name sanity_lowmem_gemma_4b_swarm_vs_27b_1task \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:27b
 ```
 
 ## Benchmark Plan

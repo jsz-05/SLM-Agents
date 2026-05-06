@@ -70,11 +70,17 @@ def call_model(
 ) -> ModelCallResult:
     model = normalize_model_name(model)
     start = time.perf_counter()
+    extra_params: dict[str, Any] = {}
+    if model.startswith("ollama/"):
+        # Safer for local comparison runs that switch between small and large
+        # models. Ollama's default keep-alive can leave both models resident.
+        extra_params["keep_alive"] = os.getenv("OLLAMA_KEEP_ALIVE", "0")
     try:
         response = completion(
             model=model,
             messages=messages,
             temperature=temperature,
+            **extra_params,
         )
     except Exception as exc:
         latency = time.perf_counter() - start
