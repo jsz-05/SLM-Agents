@@ -4,7 +4,7 @@
 
 Can a heterogeneous network of small LLM agents match or outperform a single larger LLM on persistent-stream reasoning tasks?
 
-This prototype is for Jeffrey Zhou's research work with Professor K. Mani Chandy. It compares:
+This prototype compares:
 
 - Baseline A: one larger LLM acting as a monolithic agent.
 - Method D: a heterogeneous network of smaller role-specialized agents.

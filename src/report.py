@@ -92,7 +92,7 @@ def write_markdown_summary(
         )
 
     lines.append("")
-    lines.append("## Failure Cases")
+    lines.append("## Non-Perfect Cases")
     lines.append("")
     lines.append("| id | method | task_type | gold | prediction | score |")
     lines.append("|---|---|---|---|---|---:|")
