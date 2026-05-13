@@ -67,6 +67,7 @@ def call_model(
     model: str,
     messages: list[dict],
     temperature: float = 0.0,
+    max_tokens: int | None = None,
 ) -> ModelCallResult:
     model = normalize_model_name(model)
     start = time.perf_counter()
@@ -81,6 +82,8 @@ def call_model(
                 extra_params["num_ctx"] = int(ollama_num_ctx)
             except ValueError as exc:
                 raise ValueError("OLLAMA_NUM_CTX must be an integer number of tokens.") from exc
+    if max_tokens is not None:
+        extra_params["max_tokens"] = max_tokens
     try:
         response = completion(
             model=model,

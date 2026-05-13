@@ -225,9 +225,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--swarm-architecture",
-        choices=["pipeline", "memory", "adaptive"],
+        choices=["pipeline", "memory", "memory_v2", "adaptive"],
         default="pipeline",
-        help="Use the pipeline swarm, memory/retrieval swarm, or task-adaptive specialist swarm.",
+        help=(
+            "Use the pipeline swarm, memory/retrieval swarm, memory V2 temporal "
+            "swarm, or task-adaptive specialist swarm."
+        ),
     )
     return parser.parse_args()
 
@@ -251,6 +254,8 @@ def main() -> None:
     if args.mode in ("swarm", "both"):
         if args.swarm_architecture == "adaptive":
             from src.agents.swarm_adaptive import run_adaptive_swarm
+        elif args.swarm_architecture == "memory_v2":
+            from src.agents.swarm_memory_v2 import run_memory_v2_swarm
         elif args.swarm_architecture == "memory":
             from src.agents.swarm_memory import run_memory_swarm
         else:
@@ -276,6 +281,16 @@ def main() -> None:
         if args.swarm_architecture == "adaptive":
             record["swarm"] = _run_method_safely(
                 lambda t: run_adaptive_swarm(
+                    t,
+                    small_model=args.small_model,
+                    temperature=args.temperature,
+                ),
+                task,
+            )
+            return
+        if args.swarm_architecture == "memory_v2":
+            record["swarm"] = _run_method_safely(
+                lambda t: run_memory_v2_swarm(
                     t,
                     small_model=args.small_model,
                     temperature=args.temperature,
