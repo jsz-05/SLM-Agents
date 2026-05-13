@@ -75,6 +75,12 @@ def call_model(
         # Safer for local comparison runs that switch between small and large
         # models. Ollama's default keep-alive can leave both models resident.
         extra_params["keep_alive"] = os.getenv("OLLAMA_KEEP_ALIVE", "0")
+        ollama_num_ctx = os.getenv("OLLAMA_NUM_CTX")
+        if ollama_num_ctx:
+            try:
+                extra_params["num_ctx"] = int(ollama_num_ctx)
+            except ValueError as exc:
+                raise ValueError("OLLAMA_NUM_CTX must be an integer number of tokens.") from exc
     try:
         response = completion(
             model=model,

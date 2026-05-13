@@ -138,19 +138,62 @@ Each run writes:
 - JSON records: `results/run_TIMESTAMP.json` or `results/TIMESTAMP_RUNNAME.json`
 - Markdown summary: `results/TIMESTAMP_RUNNAME_summary.md`
 
-The Markdown report includes config, summary metrics, a per-task comparison table, and failure cases.
+The Markdown report includes config, summary metrics, a per-task comparison table, and non-perfect cases.
 
 ## Code Layout
 
 - `src/run_experiment.py`: command-line runner; chooses baseline, swarm, model names, output paths, and execution order.
 - `src/agents/baseline_large.py`: Baseline A, one large model call over the full stream.
 - `src/agents/swarm_pipeline.py`: fair Method D default, a role-specialized small-model pipeline.
+- `src/agents/swarm_memory.py`: memory/retrieval Method D variant that selects evidence before answering.
 - `src/agents/swarm_adaptive.py`: exploratory ablation with task-specific rules; not the main fair comparison.
 - `src/prompts.py`: shared answer-format contract plus role prompts.
 - `src/postprocess.py`: generic answer cleanup applied equally to both methods.
 - `src/evaluator.py`: shared scoring logic for baseline and swarm.
 - `src/report.py`: Markdown report generation.
 - `data/synthetic_streams.jsonl`: synthetic stream tasks with gold answers and optional aliases.
+- `tools/download_longmemeval.py`: downloads official LongMemEval cleaned JSON files.
+- `tools/convert_longmemeval.py`: converts LongMemEval JSON into this project's JSONL task format.
+
+## LongMemEval Adapter
+
+LongMemEval is an external ICLR 2025 benchmark for long-term memory in chat assistants. It is much closer to this project than GAIA because it contains timestamped interaction histories, questions, and gold answers.
+
+Download the small oracle file first:
+
+```bash
+python tools/download_longmemeval.py \
+  --out-dir ../LongMemEval/data \
+  --files oracle
+```
+
+Convert it into this project's `StreamTask` JSONL format:
+
+```bash
+python tools/convert_longmemeval.py \
+  --input ../LongMemEval/data/longmemeval_oracle.json \
+  --output data/longmemeval_oracle_useronly.jsonl \
+  --user-only
+```
+
+Run a small smoke test:
+
+```bash
+python -m src.run_experiment \
+  --data data/longmemeval_oracle_useronly.jsonl \
+  --mode both \
+  --limit 3 \
+  --run-name longmemeval_oracle_smoke_gemma3_4b_vs_12b_3tasks \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --warmup-models \
+  --ollama-keep-alive 10m \
+  --swarm-agents 3 \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:12b
+```
+
+The `--user-only` conversion strips assistant turns to reduce local context size. This is useful for first local experiments, but it is not the full official LongMemEval setting.
 
 ## Useful Commands
 
@@ -184,6 +227,23 @@ Run only the fair 3-agent swarm:
 python -m src.run_experiment --mode swarm --limit 5 --swarm-agents 3 --run-name fair_swarm_5tasks
 ```
 
+Run the memory/retrieval swarm:
+
+```bash
+python -m src.run_experiment \
+  --mode both \
+  --limit 5 \
+  --run-name memory_swarm_gemma4b_vs_gemma12b_5tasks \
+  --execution-order method \
+  --stop-ollama-between-methods \
+  --warmup-models \
+  --ollama-keep-alive 10m \
+  --ollama-num-ctx 8192 \
+  --swarm-architecture memory \
+  --small-model ollama/gemma3:4b \
+  --large-model ollama/gemma3:12b
+```
+
 ## Exploratory Ablations Only
 
 The adaptive architecture is available for debugging and ablation studies:
@@ -205,10 +265,12 @@ This mode prints a warning because it uses task-specific prompts and canonicaliz
 Current:
 
 - Synthetic persistent-stream benchmark with gold answers and aliases.
+- LongMemEval oracle adapter for external long-memory smoke tests.
 
 Next:
 
-- Add GAIA Level 1 loader.
+- Add full LongMemEval_S runs with retrieval/truncation strategies.
+- Add GAIA Level 1 loader later.
 - Add LLM-as-judge evaluation.
 - Add real streams such as email, Slack, articles, and lab updates.
 - Plug into Professor Chandy's distributed message-passing agent system.

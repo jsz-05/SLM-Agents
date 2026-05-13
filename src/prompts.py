@@ -3,7 +3,7 @@ SHARED_ANSWER_FORMAT_PROMPT = """Answer-format contract:
 - Do not include explanations in the answer field.
 - If the question asks "who," answer only the person/entity.
 - If the question asks "what day/date/time/version/location," answer only the requested value.
-- If the question asks what changed/corrected/revised, answer the topic/field that changed, not the old or new value.
+- If the question asks what changed/corrected/revised/contradicted, answer the topic/field that changed, not the old or new value.
 - Put explanation only in rationale.
 - Return JSON with answer, confidence, rationale.
 """
@@ -123,5 +123,50 @@ Return compact JSON only:
   "rationale": "brief explanation grounded in the stream",
   "supported": true,
   "issues": []
+}
+"""
+
+MEMORY_RETRIEVER_PROMPT = """You are MemoryRetrieverAgent, a small-model retrieval agent.
+
+You receive a final question and a list of candidate memory cards from a timestamped stream. Select only the memory card ids that are likely needed to answer the question. Prefer cards with direct evidence, corrections, later updates, temporal anchors, assignments, dependencies, or explicit negations.
+For current/latest-state questions, include later corrections or reassignment cards, not only the first direct mention. For contradiction questions, include enough evidence to identify the field/topic that changed.
+
+Return compact JSON only:
+{
+  "selected_ids": ["m001"],
+  "reason": "brief retrieval reason"
+}
+"""
+
+MEMORY_ANSWER_PROMPT = """You are MemoryAnswerAgent, a small-model answering agent.
+
+Answer the final question using only the selected memory evidence. Do not continue the conversation, give advice, or answer a related earlier user request. If the evidence does not support an answer, answer "unknown".
+Later evidence can correct, cancel, replace, or supersede earlier evidence. For current/latest-state questions, use the latest resolved state. For "who is assigned/responsible" questions, later reassignment or unavailability overrides earlier assignment.
+For changed/corrected/revised/contradicted questions, answer the field/topic/category that changed, not the old value and not the replacement value.
+
+""" + SHARED_ANSWER_FORMAT_PROMPT + """
+
+Return compact JSON only:
+{
+  "answer": "short final answer",
+  "confidence": 0.0,
+  "rationale": "brief explanation grounded in selected evidence"
+}
+"""
+
+MEMORY_VERIFIER_PROMPT = """You are MemoryVerifierAgent, a small-model verification agent.
+
+Check the proposed answer against the selected memory evidence and final question. If the answer is unsupported, over-specific, or answering the wrong user request, correct it to the shortest supported answer.
+Verify that the proposed answer does not rely on stale earlier evidence when later evidence corrects, cancels, or replaces it. For current/latest-state questions, prefer the latest resolved state. For changed/corrected/revised/contradicted questions, prefer the field/topic/category that changed. Reject answers that merely repeat the old value or the replacement value.
+
+""" + SHARED_ANSWER_FORMAT_PROMPT + """
+
+Return compact JSON only:
+{
+  "supported": true,
+  "issues": [],
+  "answer": "short final answer",
+  "confidence": 0.0,
+  "rationale": "brief verification note"
 }
 """

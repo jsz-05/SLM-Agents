@@ -211,6 +211,12 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--ollama-num-ctx",
+        type=int,
+        default=None,
+        help="Optional Ollama context window size in tokens, e.g. 8192, 16384, or 32768.",
+    )
+    parser.add_argument(
         "--swarm-agents",
         type=int,
         choices=[3, 5],
@@ -219,9 +225,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--swarm-architecture",
-        choices=["pipeline", "adaptive"],
+        choices=["pipeline", "memory", "adaptive"],
         default="pipeline",
-        help="Use the original pipeline swarm or the task-adaptive specialist swarm.",
+        help="Use the pipeline swarm, memory/retrieval swarm, or task-adaptive specialist swarm.",
     )
     return parser.parse_args()
 
@@ -231,6 +237,8 @@ def main() -> None:
     args.large_model = normalize_model_name(args.large_model)
     args.small_model = normalize_model_name(args.small_model)
     os.environ["OLLAMA_KEEP_ALIVE"] = args.ollama_keep_alive
+    if args.ollama_num_ctx is not None:
+        os.environ["OLLAMA_NUM_CTX"] = str(args.ollama_num_ctx)
 
     if args.swarm_architecture == "adaptive":
         print(
@@ -243,6 +251,8 @@ def main() -> None:
     if args.mode in ("swarm", "both"):
         if args.swarm_architecture == "adaptive":
             from src.agents.swarm_adaptive import run_adaptive_swarm
+        elif args.swarm_architecture == "memory":
+            from src.agents.swarm_memory import run_memory_swarm
         else:
             from src.agents.swarm_pipeline import run_small_swarm
 
@@ -266,6 +276,16 @@ def main() -> None:
         if args.swarm_architecture == "adaptive":
             record["swarm"] = _run_method_safely(
                 lambda t: run_adaptive_swarm(
+                    t,
+                    small_model=args.small_model,
+                    temperature=args.temperature,
+                ),
+                task,
+            )
+            return
+        if args.swarm_architecture == "memory":
+            record["swarm"] = _run_method_safely(
+                lambda t: run_memory_swarm(
                     t,
                     small_model=args.small_model,
                     temperature=args.temperature,
@@ -355,6 +375,7 @@ def main() -> None:
         "stop_ollama_between_methods": args.stop_ollama_between_methods,
         "warmup_models": args.warmup_models,
         "ollama_keep_alive": args.ollama_keep_alive,
+        "ollama_num_ctx": args.ollama_num_ctx,
         "swarm_agents": args.swarm_agents,
         "swarm_architecture": args.swarm_architecture,
     }

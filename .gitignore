@@ -4,3 +4,5 @@ __pycache__/
 *.py[cod]
 results/*.json
 results/*_summary.md
+results_old/*.json
+results_old/*_summary.md
